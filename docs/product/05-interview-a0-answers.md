@@ -1,27 +1,40 @@
-# Interview outcomes — A0 + A1, 2026-10-29
+# Резултати от интервюта A0 и A1 — 29.10.2026
 
-No private financial amounts or identities are stored in this public file.
+**Публикуваните примери са синтетични; не се съхраняват реални лични финансови данни.**
 
-## A0 — repository, Bluecoins and platforms
-- Created new public `HristoManov91/family-finance`; previous money-management repo is reference/legacy only.
-- Android and iPhone are both used; app should be installable. The exact technology (PWA or app-store packaged app) remains open.
-- History in Bluecoins is extensive and must be migrated, even though older records will lack newly introduced product fields.
-- Users may create any number of financial accounts and give them arbitrary names. Account type and balance behavior are distinct from chosen names.
+## Първа група въпроси (5.1–5.6)
+- **5.1:** Изцяло ново GitHub хранилище `family-finance`. Старото може да се премахне **по-късно** след преглед, но не е изтрито. Старият код не се наследява.
+- **5.2 / 5.4:** Потребителят създава произволно именувани финансови сметки (банкови, карти, кредитни, в брой или собствено наименование), въвежда приходи и разходи в тях, избира сметка при транзакция и вижда реалния баланс.
+- **5.3 / последваща корекция:** Името на транзакцията се допълва от свободно текстово поле. Първоначално обсъжданото „кой плаща“ **не е необходимо** — важна е финансовата сметка.
+- **5.5:** Задължително прехвърляне на дългогодишната история от Bluecoins, без измисляне на липсващи нови полета.
+- **5.6:** Използват се Android и iPhone; приложението трябва да може да се инсталира. PWA е обяснено, окончателният избор е отворен.
 
-## A1 — verbatim question IDs, normalized product outcomes
-1. **2.1 YES** — Account has a starting balance set on creation, separate from recognized income.
-2. **2.2 YES** — Transfer funds directly between accounts, with no income or spending increase.
-3. **2.3 YES** — Accounts can behave as true credit cards; exact statement/limit/debt and repayment UX to clarify.
-4. **2.4 YES** — Choose for whom each account is visible. Permission levels and household aggregations to clarify.
-5. **2.5 OVERRIDING CORRECTION** — The **person who pays does not matter**. Record **which account supplies money**. Do NOT design a distinct payer or beneficiary field. Creator/editor metadata is relevant only to audit.
-6. **2.6 YES** — Editing/removing old transactions automatically corrects account balances; accounts with history should be archived rather than silently deleted.
+## Втора група (2.1–2.6)
+- **2.1:** Начален баланс при създаване, без да се брои за приход.
+- **2.2:** Трансфери между финансови сметки, без нов доход/разход.
+- **2.3:** Кредитна карта с реално кредитно поведение.
+- **2.4:** Първоначално „да се избира за кого са видими“, но **по-ново уточнение** в следващата група отменя скриването на отделни финансови сметки в общото пространство.
+- **2.5:** **Няма поле кой плаща**, избира се финансова сметка. Създателят на записа не определя разхода.
+- **2.6:** Старите транзакции при редакция/премахване коригират балансите; сметки с история се архивират.
 
-## Consequences for product design
-- Funding account (and destination account for transfer) is mandatory for posted transactions.
-- A financial account cannot be assumed public to all members simply because the household is shared.
-- Credit-card purchases count once as spending; credit-card settlements are not new purchases (proposed repayment details need interview).
-- Personal/shared budgeting must not infer a payer from the user who entered the transaction.
-- Historic Bluecoins records may have categories/names/dates/accounts/amounts but zero product rows.
+## Трета група (3.1–3.6)
+- **3.1:** Всеки участник в общо семейно пространство вижда всички приходи и разходи във всички негови финансови сметки.
+- **3.2:** Кредитна карта показва **текущ дълг, кредитен лимит и оставащ кредит**; погасяването от друга сметка е трансфер, а лихви и такси са разход.
+- **3.3:** **Всеки вижда всичко в общия акаунт**, включително другите финансови сметки. Не е нужна скрита страна на трансфер между такива сметки.
+- **3.4:** Общите справки обхващат всички сметки в общото пространство. За отделна лична отчетност човек създава друг акаунт/пространство.
+- **3.5:** Поддържат се валути по избор, но има **една основна валута за отчитане**. Например при покупка в USD системата запазва изходната валута и сума, конвертира в основната и записва стойността/курса за бъдещи справки.
+- **3.6:** При обикновена сметка е допустим **отрицателен баланс**.
 
-## Current next interview
-Finalize: credit-card debt & repayments; account view/edit roles; private-side transfer and reporting; currencies; negative account balances and archived-account lifecycle. Then move to full transaction and receipt-line interview.
+## Допълнителни правила за организация
+- Документите и обясненията са **на български**.
+- GitHub Issues са **двуезични: български + английски**, включително критериите за приемане.
+- Самото приложение има **български и английски интерфейс**.
+- Техническите идентификатори в код и API остават на английски.
+
+## Важен сценарий — кой въвежда срещу коя сметка
+Участник А въвежда транзакция за покупка, но избира финансовата сметка, наречена „Карта Б“ в общото пространство. Това е **валидно**. `createdBy = A` може да се пази в одит, но парите се отразяват в **Карта Б**, не в сметка на А по подразбиране.
+
+## Нерешени въпроси
+Кой може да редактира чужди транзакции или да управлява пространството; могат ли да се ползват няколко пространства с един вход; конкретният процес за обменни курсове/валута на сметка/банкови такси; дати на извлечения и надплащания по кредитни карти; променяне на основната валута; мобилен тип/офлайн; архивиране/сторно/одит.
+
+**Следващ етап:** пълната структура на транзакцията, редовете с артикули, категории, отстъпки, грешни бележки и възстановявания.

@@ -1,54 +1,57 @@
-# Financial accounts — A1 working specification v0.1
+# Финансови сметки и общо семейно пространство — спецификация A1 (v0.2)
 
-**Status:** core capabilities accepted, critical edge cases open. See [master discovery #1](https://github.com/HristoManov91/family-finance/issues/1), [accounts discovery #2](https://github.com/HristoManov91/family-finance/issues/2), and the decision log.
+**Статус:** основното поведение е потвърдено; конкретни гранични случаи са отворени. [Issue #1](https://github.com/HristoManov91/family-finance/issues/1) · [Issue #2](https://github.com/HristoManov91/family-finance/issues/2).
 
-## Confirmed core behavior
-- User can create freely named accounts, regardless of whether they represent bank, cash, debit card, credit card, named person or something else.
-- Account creation supports **opening balance** that does not count as income.
-- On an asset account: expense reduces current balance, income increases current balance.
-- On a credit card: real liability behavior is desired, not naive cash balance handling. Exact reporting and limit rules remain open.
-- Transfer between two accounts is supported; does not count as income or expense.
-- An account has a configurable set of users who can **see it**. Being in the same household does not imply every account is visible.
-- Editing/voiding a historical transaction corrects current and historical account balances and reports.
-- Accounts with history should support archive instead of unsafe deletion. Archived accounts should not accidentally be selected for normal new entries.
-- Transactions have name and optional free text, reference an account and never store a **financial payer** field.
+## 1. Семейно пространство и финансови сметки
+- **`Workspace` / общ семеен акаунт:** всички участници виждат **всички финансови сметки**, салда, приходи, разходи, трансфери и общи отчети. Видимостта на отделни сметки **не е настройка** вътре в това пространство.
+- **`FinancialAccount`:** произволно наименование, вид (кеш, банкова, дебитна/кредитна карта, друга), валута и начален баланс; потребителите могат да създават колкото са им необходими.
+- **Различна лична отчетност:** прави се в отделен акаунт/пространство; дали един логин управлява няколко пространства ще се уточни.
+- **Избиране при транзакция:** всеки участник може да избере **всяка финансова сметка в общото пространство**, дори именувана на партньора му. **Не съществува поле „кой плаща“.** Одитът на автора няма отношение към финансовото записване.
 
-## Example A — Cash-like account (synthetic)
-1. Opening EUR 300 -> balance 300, income report 0.
-2. Receive income EUR 500 -> balance 800, income report +500.
-3. Spend EUR 40 -> balance 760, expense report +40.
-4. Transfer EUR 100 to debit card -> balance 660, card +100, **no** extra expense or income.
-5. Correct prior expense 40 to 35 -> balance 665; historical monthly spending corrected to 35.
+## 2. Начален баланс, операции и отрицателни стойности
+- Начален баланс при откриване на сметка **не се включва** в приходите за месеца.
+- Приходът увеличава, а разходът намалява баланса на обикновена финансова сметка.
+- Обикновена сметка може да стане **отрицателна**; дали показваме предупредителна икона/съобщение ще уточним в UX.
+- Трансферът е една логическа операция от изходна към получаваща сметка и не е нов приход или разход.
 
-## Example B — Credit card (tentative behavior, not yet signed off)
-- Limit EUR 1,000, initial debt 0.
-- Buy EUR 70 -> debt 70, available limit 930, family expense +70.
-- Repay EUR 70 from bank -> bank -70, debt reduces to 0, **no new spending**.
-- Receive refund EUR 15 -> credit-card debt reduces (possibly credit balance); associated expense adjusted.
-Questions: Is credit limit mandatory? Track statement dates, due dates, card fees and interest? What about negative debt/overpayments and installments?
+### Илюстрация — обикновени сметки (само измислени суми)
+1. Начална стойност 300 EUR → баланс 300 EUR; отчетен приход 0.
+2. Запис на приход 500 EUR → баланс 800 EUR; отчетен приход 500.
+3. Разход 40 EUR → баланс 760 EUR; отчетен разход 40.
+4. Трансфер 100 EUR към друга сметка → баланс 660 EUR; другата сметка +100; общ приход/разход не се променя.
+5. Поправка на стария разход от 40 на 35 EUR → баланс 665 EUR; историческият отчет се поправя.
 
-## Example C — Selective visibility
-- A shares account S with B. A keeps another account P private.
-- B can see S, but **not** P or P's spending history, receipts, exported data, search hits or contribution to aggregates.
-- Transfer P -> S may be visible on the S side, but must not disclose P's private name, balance or identifying metadata. Exact redaction rules and whether such transfers are allowed remain to decide.
-- Current user who records a transaction should NOT be interpreted as the financial payer.
+## 3. Кредитна карта
+**Потвърдено:** показваме **текущо задължение, кредитен лимит и оставащ свободен кредит**.
+- Плащане с кредитната карта → дългът се увеличава, отчетен разход възниква **веднъж**.
+- Погасяване от банкова/друга сметка → трансфер, задължението намалява, **не е втори разход**.
+- Лихви и такси по кредитната карта → разходи.
+- **Предстои уточнение:** кредитен лимит задължителен ли е; извлечения/падежи; надплатена карта; сторно и възстановявания; плащания на вноски; как показваме положителен кредит по картата.
 
-## Proposal: lifecycle
-`ACTIVE` account can accept new entries and transfers; `ARCHIVED` account keeps its historical ledger and reports but disallows ordinary new entries. Restore to `ACTIVE` may be permitted with authorization. No destructive deletion while referenced by transactions.
+### Илюстрация — кредит (измислени данни)
+Лимит 1000 EUR и нулев дълг → покупка за 70 EUR → дълг 70 EUR, оставащ кредит 930 EUR, разход 70 EUR. Трансфер за погасяване 70 EUR от банкова сметка → дълг 0 EUR; не се отчита нов разход.
 
-## Non-negotiable correctness constraints
-- Exact decimal amounts and currency-specific rounding.
-- Transfers and credit-card repayments should not inflate income/expense reports.
-- All account operations, reports, expenses, receipts, and exports require object-level permission checks.
-- Historical corrections reliably adjust balances and period reports.
-- Opening balance may be positive, zero or a debt baseline; semantics need to match account type.
-- No public repo access to actual household financial data.
+## 4. Валутна отчетност
+- Поддържаме различни валути и **една избрана основна валута** за справките.
+- За чуждестранна покупка пазим `originalAmount`, `originalCurrency`, `baseAmount`, `baseCurrency`, `exchangeRate` и данни за времето/източника на курса, така че историята да е проверима.
+- Пример: покупка **100 USD** → оригиналната стойност остава 100 USD, а справките в избраната основна валута използват записаното конвертиране.
+- **Открити въпроси:** валута на отделна финансова сметка; различен курс/сума, реално списана от картата; автоматичен или ръчен курс; исторически BGN; преизчисляване при смяна на основна валута; закръгляне и валутни трансфери. **Не измисляме липсващи курсове.**
 
-## Open questions for A1 closure
-1. Credit card: Which balances to show — debt, available credit, statement due — and which extra flows (interest, monthly statements, fees)?
-2. Visibility: For each other household user, should 'can view' and 'can edit/add' be separate permissions?
-3. Repayments: Should bank -> credit card be handled as normal account transfer?
-4. Transfers: What should a viewer of only one of the two accounts see?
-5. Currency: one per account? Can transfers use two currencies and exchange rates?
-6. Normal accounts: may balance go below zero? How should negative or archived accounts be shown?
-7. Reports/budgets: should private accounts be excluded from all other members' summaries (including household total)?
+## 5. Видимост, редакция, архивиране
+- Всички участници в общо пространство виждат всички сметки, операции и отчети. **Няма скрита страна на трансфер между сметки в същото пространство.**
+- Пълна видимост **не е непременно разрешение за изтриване и промяна на настройки**; правата за тези действия остават за уточняване.
+- Корекция/премахване на стар запис трябва да поправи историята и актуалния баланс, без несъответствия при едновременни редакции.
+- Сметка с история се **архивира**, вместо да се изтрива безследно; архивът остава отчетен. Правила за връщане от архив и нови операции предстои да се уточнят.
+- Пространствата са изолирани едно от друго, включително в търсене, експорти, резервни копия, линкове за документи и API.
+
+## 6. Илюстративни бъдещи проверки
+- Начален баланс, трансфер и погасяване на кредитна карта **не** увеличават неправилно приходите/разходите.
+- Всеки участник може да види всички общи транзакции и да създаде нова от всяка обща финансова сметка.
+- Отрицателен баланс е разрешен и показан коректно.
+- Промяна на стара сума коригира балансите, бюджетите и отчетите.
+- Покупка в чужда валута запазва изходната сума, курса и стойността в основната валута.
+- Потребител от друго пространство няма достъп до тези сметки и операции.
+- Архивиране не премахва историята.
+
+## 7. Остава за решение
+Избор на няколко пространства с един вход; роля на собственик/участник и права за редакция; допълнителни данни за кредитни карти; валути/FX и действително списана сума; сторно срещу физическо изтриване; резервни копия и миграция.

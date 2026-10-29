@@ -1,68 +1,64 @@
-# Domain Model v0.2 — discovery hypotheses (NOT implementation)
+# Предварителен домейн модел (v0.3)
 
-See [master discovery Issue #1](https://github.com/HristoManov91/family-finance/issues/1). The model is NOT an approved schema. It records user-confirmed capabilities and hypotheses requiring domain review.
+**Статус: работна спецификация, НЕ схема на БД.** Продуктовите правила са в [Issue #1](https://github.com/HristoManov91/family-finance/issues/1), а въпросите за сметки — в [Issue #2](https://github.com/HristoManov91/family-finance/issues/2).
 
-## Candidate domain concepts
+## Два различни вида „акаунт“
+1. **Семейно пространство (`Workspace`)** — обща среда за отчетност с участници, всички финансови сметки, транзакции и отчети. Всеки участник вижда **всичко вътре в това пространство**, независимо кой е записал операцията и как е именувана сметката. Отделната/лична отчетност изисква **друг акаунт/пространство**; дали един потребител може да има няколко пространства с един вход е отворено за решение.
+2. **Финансова сметка (`FinancialAccount`)** — каса, банков баланс, дебитна/кредитна карта, виртуална сметка или произволно именувана категория за движение на пари **в рамките на едно пространство**. Не е потребител и няма личен „платец“.
 
-| Concept | Purpose / meaning | Status |
-| --- | --- | --- |
-| User | Individual passwordless identity; edits recorded for audit (NOT financial payer) | Required, auth provider open |
-| Household / Workspace | Membership and permissions boundary for collaborating users | Required, invitation model open |
-| FinancialAccount | Custom name, account type, currency, opening amount, status and account-specific visibility | Required |
-| AccountAccess | Selected users with specific account permissions; authorization applies to linked transactions and exports | Visibility confirmed; roles open |
-| FinancialEvent / Transaction | Expense, income, transfer, adjustment/correction, optional refund; name, date, amount, source/destination account(s) | Core required; refund rules open |
-| TransactionItem | Purchased item/product or service with original title, normalized title, quantity, unit, price, category/subcategory | Required for itemized transactions, not mandatory for historic/manual single expenses |
-| Category | Main category and optional subcategory, user-manageable and icon-rich | Required |
-| Product | Optional normalized catalogue with aliases, units, store-specific display name | Candidate |
-| Merchant | Optional shop/vendor name and location | Required optional metadata |
-| ReceiptDocument | Protected PDF/photo and processing metadata | Required |
-| ExtractionJob | OCR/AI-generated **draft** of transaction and items, manual confirmation and field-level corrections | Required |
-| Budget | Limit/actual amount for selected period, scope and category/financial account | Required; semantics open |
-| ImportBatch | Bluecoins import with preview, mapping, validation, deduplication, re-run safety | Required |
-| AuditEvent | Actor and timestamp of changes; **not** a financial payer/beneficiary | Candidate |
+**Последна изрична корекция от собственика:** няма скрити финансови сметки в общото семейно пространство; предишната идея за видимост на ниво отделна финансова сметка **отпада**.
 
-**No payer or beneficiary field.** Expense entries reference the financial source account. Who created/edited a record may be stored for audit, but should not be used to classify expenses unless the owner explicitly asks later.
+## Кандидат-същности
 
-## Confirmed financial invariants
+| Техническо име | Отговорност и статус |
+| --- | --- |
+| `User` | Собствена идентичност, вход без парола и автор на редакции за одит. Потвърдено е, че авторът **не е финансов платец**. |
+| `Workspace` | Обща граница за достъп, собствена основна валута за справки (обхватът на валутата предстои да се потвърди), участници, настройки. |
+| `Membership` | Членство и евентуални права за редакция/администриране; **видимостта на всички финансови данни в общото пространство е задължителна**. |
+| `FinancialAccount` | Свободно име, вид, валута, начален баланс, състояние, изчислим баланс; поддържа отрицателни стойности. |
+| `CreditCardAccount` | Специализирано поведение за задължение, кредитен лимит, свободен кредит, погасяване; може да е подтип/режим, без решение за конкретна таблица. |
+| `Transaction` | Разход, приход, трансфер; дата, сума, финансова сметка/сметки, име, категория, незадължителни описание и търговец. |
+| `TransactionLine` | Ред от касова бележка: оригинално/нормализирано име, количество, единица/грамаж, единична и крайна цена, категория/подкатегория. |
+| `Category` | Главна категория и незадължителна подкатегория, управление от потребител, икона и статус. |
+| `Product` | Незадължителна канонична идентичност и псевдоними на продукт; подлежи на обсъждане. |
+| `Merchant` | Незадължителен магазин, търговска верига, обект или местоположение. |
+| `ReceiptDocument` | Защитен оригинален PDF/снимка, свързана транзакция/чернова, статус и срок за съхранение. |
+| `ExtractionJob` | AI/OCR предложение с неизвестни и несигурни полета, одобрено ръчно. |
+| `Budget` | Лимит и сравнение с разход за период и избрани категории/сметки в пространството. |
+| `ImportBatch` | Историческа миграция от Bluecoins с съпоставка, преглед, валидация, дубликати. |
+| `AuditEvent` | Кой е създал/редактирал/отменил запис, без да представлява финансов платец. |
 
-1. An **initial opening balance is NOT income**. When creating a cash/bank account, the initial value defines the balance baseline.
-2. An expense subtracts from an ordinary asset account, and income adds to it. A credit-card liability must use debt-specific semantics.
-3. A transfer moves funds between accounts as **one linked operation** and is not included in income/expense reports or overall family spending.
-4. An edit, correction or void of an old transaction updates historical/current balances and report totals consistently.
-5. An account with recorded history is archived rather than destroyed. Normal new transactions should not select an archived account.
-6. Account visibility is per selected member; hidden accounts and associated transaction data **must not leak through search, reports, exports, receipt links or side of a transfer**.
-7. Multi-line receipt items and their category breakdown MUST NOT be double counted in addition to the transaction total.
-8. Use exact decimals and currency-specific rounding, never binary floating-point for money.
-9. Old Bluecoins imports remain valid even if newly added per-product quantity/price fields are missing.
-10. OCR/AI results are **drafts**. No financial posting until explicit user acceptance.
-11. Credit-card purchases, repayments, refunds, interest and available-limit handling require explicit business rules and tests.
+## Валутни стойности — логически модел
+За транзакция в чужда валута трябва да се пазят **поне**:
+- `originalAmount` и `originalCurrency` (например `100 USD`);
+- `baseAmount` и `baseCurrency` (стойността в избраната основна валута);
+- използван `exchangeRate`, посока на курса, дата/час и източник/ръчна корекция, така че конверсията да е проследима;
+- валутата на финансовата сметка, която може да се различава от валутата на покупката — **каква сума реално е отразена по тази сметка остава открито решение**.
 
-## Synthetic grocery transaction
+Запазеният курс трябва да позволява възстановяване на първоначалния отчет; при смяна на основната валута ще определим дали се преизчисляват историческите стойности или се създава нова отчетна версия. **Не избираме доставчик/формула, преди интервюто.**
 
-*Transaction:* Grocery visit, paid from account `Shared Card`, category `Food`, date `2026-10-01`, merchant `Example Shop`, optional description `Weekly shopping`, total `12.30 EUR`.
+## Финансови инварианти
+1. Началният баланс не се отчита като приход.
+2. Разходът от обикновена сметка намалява баланса, приходът го увеличава. Отрицателен баланс е разрешен.
+3. Трансферът между две сметки е **една логическа операция** и не влиза в разходите/приходите. Валута и реално постъпила сума трябва да са отчетени правилно.
+4. Покупката с кредитна карта увеличава дълга и се брои **веднъж** за разход; погасяването е трансфер, а лихвите/таксите са разход.
+5. Промяна или отменяне на историческа транзакция коригира текущите и историческите баланси, справки и бюджети.
+6. Редовете с артикули са разбивка на една транзакция; не бива да водят до двойно броене.
+7. Ръчна транзакция или стар импорт от Bluecoins може да няма редове с продукти.
+8. Паричните суми са с точна десетична аритметика, валутно дефинирано закръгляне и версия на използвания курс.
+9. Общото пространство е напълно видимо за своите членове, но **данните на различни пространства са изолирани**.
+10. AI/OCR **не записва потвърдена финансова операция** преди потребителски преглед.
 
-| Item | Qty / unit | Final price | Main category | Subcategory |
+## Синтетичен пример — пазар
+Транзакция: „Пазаруване“; финансова сметка „Обща карта“; търговец „Примерен магазин“; сума 12,30 EUR; незадължително описание „седмични покупки“.
+
+| Артикул | Количество | Крайна сума | Главна категория | Подкатегория |
 | --- | --- | --- | --- | --- |
-| Apples | 1.5 kg | 3.00 EUR | Food | Fruit & vegetables |
-| Milk | 2 pcs | 3.30 EUR | Food | Dairy |
-| Soap | 2 pcs | 6.00 EUR | Household | Cleaning |
+| Ябълки | 1,5 kg | 3,00 EUR | Храни | Плодове и зеленчуци |
+| Прясно мляко | 2 бр. | 3,30 EUR | Храни | Млечни |
+| Сапун | 2 бр. | 6,00 EUR | Дом | Почистване |
 
-The transaction-level `Food` category may serve as a default, but the soap must be attributed to `Household / Cleaning` for itemized reports. How inherited categories, discounts, VAT and rounding work is still open.
+Главната категория „Храни“ в заглавката може да е подразбираща се, но отчетите по артикул трябва да отчетат сапуна в „Дом“. Нужни са още правила за наследяване, закръгляне, намаления, данъци и смесени плащания.
 
-## Synthetic account examples
-
-- Cash opening 500 EUR = balance 500 EUR, income report 0.
-- Income 100 EUR to cash = balance 600 EUR, income 100.
-- Expense 25 EUR from cash = balance 575 EUR, expense 25.
-- Transfer 75 EUR from cash to bank = cash 500 EUR and bank +75 EUR, income/expense unchanged.
-- Credit-card purchase 35 EUR = expense 35 EUR and card liability +35 EUR.
-- Pay card debt 35 EUR from bank = bank -35 EUR, liability -35 EUR, **no additional expense**.
-
-Credit card examples are **proposed conventions** pending the next interview, not a final accepted sign/balance contract.
-
-## Questions
-- View-only versus view/edit/manage account permissions, hidden transfer counterparties, household budgets.
-- Multi-currency accounts, FX and currency exchange when transferring.
-- Credit-card limit, repayment, overpayment, installments, interest/fees and due dates.
-- Item-level category defaults, split tenders, partial refunds, vouchers, discounts and quantity units.
-- Whether deleting transactions means voiding/archiving with audit history instead of permanently deleting.
+## Отворени решения
+Права за редакция/изтриване; членство в няколко пространства; точен обхват на основната валута; конверсия към валута на сметка; split транзакции и ваучери; сторно и връщания; каталог с продукти; офлайн синхронизация; одит и конфликтни редакции.

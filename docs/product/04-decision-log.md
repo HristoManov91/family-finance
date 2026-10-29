@@ -1,42 +1,52 @@
-# Decision log — family-finance
+# Регистър на продуктови решения — Family Finance
 
-Date: 2026-10-29. Public documentation only: **NO real household data**.
+**Актуализация: 29.10.2026.** Този документ е с приоритет пред по-стари предположения. Никакви реални семейни финансови данни не трябва да се публикуват.
 
-**Status:** ACCEPTED — directly confirmed user behavior. PARTIAL — capability confirmed, precise semantics open. PROPOSED — technical/product suggestion. OPEN — awaiting interview. A new explicit user answer supersedes older wording.
+## Легенда
+- **ПРИЕТО:** потребителят изрично е потвърдил правилото.
+- **ЧАСТИЧНО:** функционалността е потвърдена, но има нерешени подробности.
+- **ПРЕДЛОЖЕНИЕ:** препоръка, не продуктово изискване.
+- **ОТВОРЕНО:** необходимо е интервю/решение.
+- **ЗАМЕНЕНО:** предишно правило е отменено от по-ново изрично решение.
 
-| ID | Decision | Status | Outcome / question |
+| ID | Тема | Статус | Решение или отворен въпрос |
 | --- | --- | --- | --- |
-| D-001 | Repo | ACCEPTED | New public `HristoManov91/family-finance`. Old 2022–23 code is not an implementation base. Deletion of old repo is optional later, after transfer; no deletion was done. |
-| D-002 | Browser & mobile | PARTIAL | Browser + Android and iPhone; installable experience desired. PWA vs native App Store/Google Play publication open. |
-| D-003 | Hosting | OPEN | Hosted vs self-hosted, cloud provider, cost and backups. |
-| D-004 | Users | PARTIAL | Multiple separate users with shared household workflows; login, member invites, roles open. |
-| D-005 | Account names | ACCEPTED | User creates any number of financial accounts with any desired names. Types may include cash, cards, credit cards or other named accounts. |
-| D-006 | Account attribution | ACCEPTED | **Only source/destination financial accounts matter financially. NO separate payer or beneficiary field.** Creator/editor can be audit metadata only. Supersedes earlier provisional payer idea. |
-| D-007 | Opening balances | ACCEPTED | Define opening value on account creation, **not booked as income**. |
-| D-008 | Income/expense | ACCEPTED | Choose account per transaction; expense decreases a positive asset balance, income increases it. Credit accounts require liability-specific behavior. |
-| D-009 | Transfers | ACCEPTED | Transfer between accounts, not double counted as income or spending. |
-| D-010 | Credit cards | PARTIAL | Support true credit card behavior; debt, limit, fees, payback, refunds and overpayment to clarify. |
-| D-011 | Visibility | PARTIAL | User selects **which members may see each account**. View/edit/manage rights, transfer counterparties and aggregated reports open. |
-| D-012 | Editing history | ACCEPTED | Editing/removing old transactions recalculates balances and reports. Exact voiding/audit rules open. |
-| D-013 | Archiving | ACCEPTED | Account with history may be archived rather than destructively removed. Restore and transfer-before-archive rules open. |
-| D-014 | Transaction name/description | ACCEPTED | Name and separate optional free-text note. |
-| D-015 | Categories | PARTIAL | Required primary category on ordinary expense/income; optional subcategory, per-item override, custom categories and icons. |
-| D-016 | Itemized expenses | PARTIAL | Transactions may contain one or many products; names, weight/quantity where available, categories and prices. Discounts/refunds/rounding rules open. |
-| D-017 | Documents | PARTIAL | PDF/photo -> AI/OCR transaction draft with editable header and line items; human review is necessary. |
-| D-018 | Budgets | PARTIAL | Monthly spending limit and/or income budgeting, periodic reports; calculation rules open. |
-| D-019 | Historical data | ACCEPTED | Must import available existing Bluecoins history. New fields missing in historical transactions stay empty (do not invent). Import mapping and reconciliation open. |
-| D-020 | Reporting/export | ACCEPTED | Filter by product/category/subcategory/transaction, period and account; export PDF, XLSX, CSV. Formats/authorization open. |
-| D-021 | Passwordless auth | PARTIAL | Prefer modern no-password login, with recovery/authorization to decide. |
-| D-022 | Stack | PROPOSED | Java 25, Spring Boot 4.1.x, PostgreSQL, Flyway, Nuxt 4, Vue 3, TypeScript, modular monolith; pin versions at development start. |
-| D-023 | Implementation flow | ACCEPTED | Interview -> specs/ADRs -> epics and small issues -> Codex Draft PR -> independent review -> explicit merge. |
-| D-024 | Currency | OPEN | EUR only or multi-currency/legacy BGN? FX and account currencies? |
-| D-025 | Household reporting | OPEN | When some accounts are private, which aggregate totals, category reports and budgets are visible to other users? |
-| D-026 | Sharing mutations | OPEN | Can account viewers add/edit transactions, change visibility or see private counterpart of transfers? |
-| D-027 | Deleting transactions | OPEN | Physical delete vs logical void + audit and recovery. Resulting balance change ACCEPTED. |
-| D-028 | Credit repayment | PROPOSED | Record credit-card repayment from another account as a transfer, NOT a second expense. |
-| D-029 | Ledger correctness | PROPOSED | Model balanced journal/postings and derive balances rather than hand-patching cached balances, subject to architectural ADR. |
+| D-001 | GitHub хранилище | ПРИЕТО | Ново публично `HristoManov91/family-finance`. Старият код не се пренася; старото хранилище не е изтрито. |
+| D-002 | Документация и Issues | ПРИЕТО | Документите са **на български**, всички GitHub Issues съдържат **български и английски** раздели, техническите идентификатори са на английски. |
+| D-003 | Езици на приложението | ПРИЕТО | Пълен потребителски интерфейс на **български и английски**; UX избор и форматиране предстоят. |
+| D-004 | Уеб/мобилни платформи | ЧАСТИЧНО | Браузър и инсталиращо се приложение за Android/iPhone. PWA, Capacitor и магазините са за решение. |
+| D-005 | Общ семеен акаунт | ПРИЕТО | **В общото семейно пространство всички членове виждат всички финансови сметки, приходи, разходи, трансфери и отчети.** |
+| D-006 | Лични/скрити финансови сметки | ЗАМЕНЕНО | Предходното предположение за скриване на отделни сметки вътре в общото пространство е **отменено**. За самостоятелна отчетност се използва друг акаунт/пространство. |
+| D-007 | Потребителски акаунти и пространства | ЧАСТИЧНО | Отделни идентичности и общо пространство; дали един потребител управлява много пространства с един вход и какви са ролите предстои да уточним. |
+| D-008 | Създаване на транзакция | ПРИЕТО | Всеки член може да въвежда транзакция, избирайки която и да е финансова сметка в общото пространство, включително сметка, именувана на друг член. |
+| D-009 | Поле „платец“ | ПРИЕТО | **НЯМА** финансово поле `payer` или `beneficiary`; `createdBy` е само одит, не определя финансовата сметка. |
+| D-010 | Финансови сметки | ПРИЕТО | Неограничено потребителско именуване, различни видове сметки (банка, кеш, кредитна карта и др.). |
+| D-011 | Начален баланс | ПРИЕТО | При откриване на сметка се задава начален баланс и той **не е приход**. |
+| D-012 | Приход/разход | ПРИЕТО | Избира се финансова сметка; приходът увеличава, а разходът намалява баланса при обикновени сметки. |
+| D-013 | Отрицателен баланс | ПРИЕТО | Разрешен е при обикновена сметка; точното предупреждение в UI предстои да се реши. |
+| D-014 | Трансфери | ПРИЕТО | Движение между сметки, което **не** е приход/разход. |
+| D-015 | Кредитна карта | ПРИЕТО (ядро) | Показва дълг, кредитен лимит и оставащ кредит. Погасяването е трансфер, лихви и такси са разходи. Извлечения/надплащания остават отворени. |
+| D-016 | Исторически корекции | ПРИЕТО | Корекция/премахване на стари транзакции актуализира текущи и исторически баланси и справки. |
+| D-017 | Архивиране на сметки | ПРИЕТО | Сметки с история се архивират, вместо да бъдат унищожени безследно. |
+| D-018 | Полета на транзакция | ПРИЕТО (ядро) | Име, дата, сума, финансова сметка, главна категория, незадължителна подкатегория, свободно текстово описание; магазин, ако е известен. |
+| D-019 | Артикули | ЧАСТИЧНО | Един/много продукти с име, количество/грамаж при наличие, сума и категория/подкатегория; отстъпки/закръгляне отворени. |
+| D-020 | Категории и икони | ПРИЕТО (ядро) | Потребителски главни/подкатегории и богат избор на икони. |
+| D-021 | Разпознаване на бележки | ПРИЕТО (ядро) | PDF/снимка → редактирана чернова с преглед преди потвърждение. |
+| D-022 | Основна валута | ПРИЕТО | Поддръжка на много валути и **една избрана основна**; всички отчети са преизчислени в нея. Точният обхват (профил/пространство) предстои да се формализира. |
+| D-023 | Чуждестранни транзакции | ПРИЕТО | Запазва се **оригинална сума+валута**, **стойност в основната валута** и проследим обменен курс. Курс, източник и разлики с банката — отворени. |
+| D-024 | Бюджети | ЧАСТИЧНО | Месечни лимити и/или приход, категории/периоди — за изясняване. |
+| D-025 | Справки и експорт | ПРИЕТО (ядро) | Периоди и филтри по продукт/транзакция/категория/сметка; PDF/XLSX/CSV. |
+| D-026 | История от Bluecoins | ПРИЕТО | Наличната история се импортира, без да се измислят липсващите нови полета. |
+| D-027 | Вход без парола | ЧАСТИЧНО | Съвременен passwordless метод; регистрация и възстановяване — отворени. |
+| D-028 | Технологии | ПРЕДЛОЖЕНИЕ | Java 25, Spring Boot 4.1.x, PostgreSQL, Flyway, Nuxt 4/Vue 3/TS, модулен монолит; проверка на версиите при реализация. |
+| D-029 | Доставка | ПРИЕТО | Интервюта → спецификация → двуезични Issues → Codex Draft PR → независима проверка → изрично merge. |
+| D-030 | Права за редакция | ОТВОРЕНО | Пълна видимост и добавяне на транзакции в общо пространство са приети; кой може да трие, редактира чужди записи, управлява участници — отворено. |
+| D-031 | Конвертиране | ОТВОРЕНО | Източник/час на курс, ръчно коригиране, сметка и транзакция с различни валути, смяна на основна валута. |
+| D-032 | Отделни пространства | ОТВОРЕНО | Един вход с много пространства или отделни независими акаунти; покани и прехвърляне. |
+| D-033 | Деплоймънт/офлайн | ОТВОРЕНО | Облак/самостоятелно хостване, резервни копия, мобилна синхронизация. |
 
-## Further decisions and change protocol
-- Preserve a dated explicit owner decision with rationale, alternatives and consequences when moving from OPEN/PARTIAL to ACCEPTED.
-- On change, update all affected specifications and parent issues together.
-- No private family budget figures or financial sample exports should ever enter this public repository.
+## Последователност на поправките
+1. Първоначално бе обсъждано `payer` → **отменено** с изричното „важно е от коя сметка са парите“.
+2. Първоначално бе обсъждана отделна видимост за финансови сметки → **отменено** с „всеки вижда всичко в общия акаунт“.
+3. Остава одит кой е въвел/поправил данните, **без да влияе** върху финансовото класифициране.
+4. При промяна на решение актуализираме спецификациите, Issues и тестовете; не променяме тихомълком приети инварианти.

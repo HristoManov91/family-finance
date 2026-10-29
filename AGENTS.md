@@ -1,15 +1,29 @@
-# AGENTS.md — Family Finance repository rules
+# Правила за Codex и сътрудници — Family Finance
 
-**PHASE: PRODUCT DISCOVERY. NO IMPLEMENTATION WORK IS AUTHORIZED YET.**
+> **Фаза: продуктово планиране. НЕ се разрешава имплементация.**
 
-- Follow [master discovery #1](https://github.com/HristoManov91/family-finance/issues/1) and the current accepted decision log before proposing code.
-- This is a **new** repository; DO NOT reuse 2022–23 legacy code or assumptions.
-- Clearly separate `ACCEPTED`, `PARTIAL`, `PROPOSED` and `OPEN` in specs. Newer user answers supersede older provisional assumptions.
-- There is **no financial payer/beneficiary field**. Expenses link to their funding account. CreatedBy/updatedBy may be used for audit only.
-- Opening balances, asset spending, income, transfers and credit-card debt are distinct domain operations; avoid double counting credit-card repayments and transfers.
-- Per-account sharing and household isolation must be enforced on every read, write, report, export, attachment and linked transfer.
-- PUBLIC REPOSITORY: no actual receipts, names, home addresses, financial statements, real household budgets, bank details, production data, tokens, credentials or private exports. Use synthetic examples only.
-- Do not add implementation dependencies, UI, backend endpoints or schema until the corresponding implementation Issue is approved.
-- One approved bounded implementation Issue per Draft PR. Do not auto-merge, mark Ready, close Issues or claim checks not run.
-- Provide final SHA, exact checks, full scope and risk notes. Independent review precedes user-authorized merge.
-- Avoid unrelated refactors and overengineering; note additional opportunities separately.
+## Източници на истина
+- [Issue #1](https://github.com/HristoManov91/family-finance/issues/1), [Issue #2](https://github.com/HristoManov91/family-finance/issues/2), спецификациите и дневникът на решенията.
+- Документацията е **на български**. Всяко GitHub Issue съдържа ясни **български и английски** секции с еднакви правила, обхват и критерии. Кодът, API имената, класовете, таблиците и програмните идентификатори са на английски.
+- Потребителският интерфейс задължително поддържа **bg** и **en** чрез i18n ресурси; без твърдо зададени текстове в компонентите.
+- Разграничавайте **ПРИЕТО**, **ЧАСТИЧНО**, **ПРЕДЛОЖЕНИЕ** и **ОТВОРЕНО**; по-новите изрични решения заменят предишните предположения.
+
+## Критични финансови правила
+- В общо семейно пространство **всички участници виждат всички сметки, транзакции и общи справки**. Не въвеждайте скрити финансови сметки вътре в него. Права за редакция/изтриване предстои да бъдат уточнени.
+- При въвеждане на транзакция се избира финансовата сметка (възможно е да е сметка, именувана за друг член). **Няма финансово поле payer/beneficiary.** `createdBy`/`updatedBy` служат само за одит.
+- Начален баланс ≠ приход; трансфер ≠ разход/приход; погасяване на кредитна карта ≠ втори разход. Поддържайте коректно дълг и наличен кредит.
+- Валутите се обработват с точни десетични стойности. Пазете оригиналните сума и валута, основната валута, преизчислената сума и използвания курс/контекст за възпроизводимост.
+- Изменения на исторически транзакции коригират балансите и отчетите; сметки с история се архивират вместо да бъдат унищожени.
+- AI/OCR създава **чернова за човешки преглед**, а не автоматично записан разход.
+- Исторически данни от Bluecoins могат да нямат новите полета за артикули, грамажи и категории на редовете.
+
+## Сигурност и публично хранилище
+- Използвайте **само синтетични** данни във файлове, Issues, PR, снимки, тестове и CI логове.
+- Не публикувайте реални финансови документи, имена, адреси, банкови данни, пароли, токени и продукционни конфигурации.
+- Прилагайте ограничения за достъп до пространства и всички свързани записи, експорти и документи; не допускайте IDOR и течове през отчети.
+- Не наследявайте стария код от хранилището `money-management`.
+
+## Работа по реализацията (след одобрение)
+- Една одобрена малка задача → един **Draft PR** с тестове, точен commit SHA, доказателства, рискове и резултат от CI.
+- Без auto-merge, превключване към Ready, затваряне на Issue или промени извън обхвата без изрично одобрение.
+- Не вземайте недоговорени продуктови решения от името на собственика; документирайте отворения въпрос.

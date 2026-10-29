@@ -1,25 +1,27 @@
-# Family Finance
+# Family Finance — семейни финанси
 
-A family finance management application focused on **shared and private financial accounts**, fast income/expense/transfer tracking, configurable budgets, item-level receipt capture, and rich reports.
+**Статус: продуктово планиране.** Все още не е разрешена реализация на функционалности.
 
-> **Status: product discovery, not implementation.** Requirements, domain rules, security, platform choices, and the implementation backlog are being defined through staged interviews. The repository is public, but financial data is private.
+Приложение за семейни приходи, разходи, финансови сметки, бюджети, касови бележки и анализ по продукти. Целта е да запазим удобното въвеждане на разходи от Bluecoins и да добавим подробна структура за покупки, обща работа и автоматизирано разпознаване на бележки.
 
-## Core direction
-- Browser and installable Android/iPhone experiences (distribution and offline strategy to be decided).
-- User-created accounts with custom names, initial balances, income, expenses, and transfers.
-- Optional sharing of each financial account with selected household members.
-- Transactions link to the **funding account**, not a separate "who paid" field.
-- One transaction may have multiple purchased products, categories, quantities, and optional store details.
-- Assisted image/PDF receipt import produces an **editable draft**, never an automatically approved expense.
-- Reports and exports: PDF, XLSX and CSV; import historical transactions from Bluecoins.
-- Modern passwordless sign-in (mechanism and recovery to be selected).
+## Основни изисквания
+- **Общо семейно пространство:** всеки участник вижда всички финансови сметки и транзакции в него. Личната финансова отчетност се води в отделно пространство/акаунт, не чрез скриване на сметки в общото.
+- **Финансови сметки:** потребителски имена, начален баланс (не е приход), приходи, разходи, трансфери, кредитни карти, възможен отрицателен баланс. Всеки член на общото пространство може да въведе разход от всяка сметка там. **Няма поле „кой е платил“.**
+- **Разходи по артикули:** един или повече продукти, категории, подкатегории, количество/грамаж и магазин; свободна бележка към транзакцията.
+- **Касови бележки:** снимка/PDF → редактирана и изрично потвърдена чернова, без автоматично осчетоводяване.
+- **Бюджети и справки:** месечен лимит и/или приходи; периоди, категории, продукти, финансови сметки; експортиране в PDF, XLSX и CSV.
+- **Валути:** избира се основна валута за отчитане. Запазва се оригиналната сума/валута и се записва преизчислена стойност в основната валута и информация за курса.
+- **Миграция:** наличните исторически транзакции от Bluecoins не трябва да се губят; липсващи нови полета остават празни.
+- **Езици:** цялото приложение на **български и английски**; документацията на български, GitHub Issues на двата езика.
+- **Платформи:** браузър, Android и iPhone; предпочитано инсталиране на телефона. PWA/App Store подходът не е окончателно решен.
+- **Вход:** съвременна автентикация без парола, с безопасно възстановяване на достъпа.
 
-## Planning process
-1. Interview for a complete, unambiguous product specification and edge cases.
-2. Record approved choices separately from suggestions and open questions.
-3. Prepare epics and implementation issues, with acceptance criteria, tests, dependencies, and Codex-ready prompts.
-4. Implement only after scope is agreed, using Draft PRs and independent review; no auto-merge.
+## Работен процес
+1. Интервюта и подробно изясняване на функционалности и гранични случаи.
+2. Версионирана спецификация, решения, ADR и приоритети за MVP.
+3. GitHub епики и малки задачи, с критерии за приемане и тестове, на български и английски.
+4. Codex реализира отделни задачи чрез Draft PR; независима проверка и изрично разрешение преди merge.
 
-**Privacy:** Do not put real family receipts, balances, financial details, user data, credentials, tokens or production exports into this public repository. Use fictional samples only.
+Водещо [Issue #1 — продуктов план](https://github.com/HristoManov91/family-finance/issues/1). [Issue #2 — финансови сметки](https://github.com/HristoManov91/family-finance/issues/2).
 
-_The detailed discovery documents are being migrated from the previous planning repository into this new codebase. No legacy application code is being imported._
+**Поверителност:** това хранилище е публично. Никога не добавяйте реални касови бележки, извлечения, семейни суми, лични данни, токени, пароли или ключове. Примерните данни са изцяло измислени.

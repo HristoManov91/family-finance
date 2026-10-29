@@ -1,30 +1,55 @@
-# Planning -> Implementation -> Independent Review
+# Процес: интервю → спецификация → GitHub Issues → Codex → независима проверка
 
-This workflow is a draft specification of the owner's preferred delivery process and applies to future implementation issues only once accepted.
+**Статус:** договорен работен подход. **Сега сме в етап на интервюта; Codex няма разрешение да пише приложен код.**
 
-## Stages
-1. Interview and capture the problem in Bulgarian; separate user-confirmed behavior from proposals and unresolved choices.
-2. Revise version-controlled specs, ADRs, definitions and sample scenarios using a **Draft PR**.
-3. Independently review the discovery documents; only after approval create/activate implementation epics.
-4. Define one implementation Issue at a time with: problem, scope, out of scope, dependencies, business rules, domain constraints, API/DB/UI impacts, migration/data compatibility, error behavior, numbered acceptance criteria, tests and observable success conditions.
-5. Provide Codex with a **single self-contained copyable prompt** in English per Issue, including exact scope and no unrelated refactor.
-6. Codex implements using one **Draft PR**; it must not mark Ready, auto-merge, close issues or claim tests that were not run.
-7. Implementation result must show changed files, final commit SHA, reproducible tests and test counts, CI checks at **that SHA**, risks, deviations, and remaining work.
-8. ChatGPT independently compares the full changed PR against current main and Issue/ADR contract, including security, concurrency, finance rounding, privacy, accessibility and regressions.
-9. On review findings, write a single copyable fix prompt, run checks again, and re-review. User explicitly approves Ready/merge/closure.
+## 1. Разделение на отговорностите
+- **Продуктов документ (на български):** бизнес правила, потребителски потоци, алтернативи, изключения, примери и ограничения.
+- **Дневник на решенията (на български):** точно кое е ПРИЕТО, ЧАСТИЧНО, ПРЕДЛОЖЕНИЕ или ОТВОРЕНО и кога.
+- **ADR (на български):** технически избор, мотиви, алтернативи, последствия, съвместимост и миграция.
+- **GitHub Issue (на български + английски):** една ясно ограничена задача с **равностойни** двуезични обхват и acceptance criteria. Английската част е достатъчна за Codex.
+- **`AGENTS.md` (на български):** постоянни правила за репозитория, поверителност, обхват и workflow.
+- **Codex prompt:** английски, самодостатъчен, с точни файлове/граници, acceptance criteria и тестове.
+- **Draft PR:** реализация/документация, точен финален SHA и проверки за същия SHA.
 
-## Quality gates (adapt after project bootstrap)
-- Backend unit/integration/security tests; real PostgreSQL behavior through Testcontainers where required.
-- Frontend lint/format/typecheck/unit/build and Playwright flows for affected features.
-- Database migration forward-compatibility and transactional correctness.
-- Synthetic sample receipts and error/missing-field cases.
-- Authorization tests: cross-household isolation, upload/read/delete/export, role boundaries.
-- Money invariants: total/line allocation, rounding, refunds, transfers, duplicate ingestion.
-- No credentials, private receipts, source financial records or PII in the public repo.
-- CI efficiency: cache, change-scoped jobs, cancel superseded runs, avoid wasteful scheduled jobs.
+## 2. Планиране на продукта
+1. Обсъждаме **малки групи въпроси** с потребителя.
+2. Записваме изричните решения и премахваме отменените предположения от **всички** засегнати документи и Issues.
+3. Изграждаме примери с **измислени суми** за приходи, разходи, трансфери, кредитни карти, валути, категории, артикули, сторно и импорти.
+4. Не фиксираме структура на таблици, API или UI поведение преди бизнес правилата.
+5. Решаваме какво влиза в MVP и какво остава за следваща версия.
 
-## Document ownership
-Product spec answers **what / why**; ADR answers **technical choice / tradeoff**; AGENTS.md answers **repository rules**; GitHub Issue answers **single deliverable**; Codex prompt answers **next bounded action**; CI and independent review answer **whether correct**.
+## 3. Разделяне на задачите
+За всяка одобрена област: епик → зависими самостоятелни задачи.
 
-## Current stop condition
-**Do not implement any product functionality yet.** Complete the stage-by-stage discovery and sign off the MVP and deployment model first.
+Шаблонът за всяко бъдещо Issue (и на двата езика) включва:
+- Проблем и желан резултат / Problem and goal.
+- Обхват и извън обхвата / Scope and out of scope.
+- Бизнес правила, инварианти, примери / Business rules, invariants, examples.
+- Последици за API, БД, UI и миграции / API, DB, UI, migration impact.
+- Права, обработка на грешки, гранични случаи, валута и локализация / Authorization, errors, edge cases, currency and i18n.
+- Номерирани критерии за приемане / Numbered acceptance criteria.
+- Положителни/негативни тестове / Positive and negative tests.
+- Зависимости и ограничения / Dependencies and constraints.
+
+Не създаваме огромни реализационни Issues, които оставят решенията на Codex.
+
+## 4. Codex Draft PR и преглед
+1. Само след одобрение на спецификациите Codex взема **една** реализационна задача.
+2. Създава един **Draft PR**. Не маркира Ready, не включва auto-merge, не затваря Issue.
+3. Изпълнява приложимите тестове (backend unit/integration/security, Testcontainers/Postgres, frontend lint/typecheck/Vitest, Playwright, build и миграции).
+4. Посочва **точния финален commit SHA**, изпълнени команди, реални броячи за PASS/FAIL/SKIP, CI проверки към същия SHA, променени файлове, рискове и известни проблеми.
+5. Следва независима проверка на целия PR спрямо текущия `main`, спецификацията и тестовете.
+6. За намерени проблеми даваме един самодостатъчен prompt за поправки, изпълняваме проверките отново и преглеждаме пак.
+7. Merge и затваряне на задачи **само след изрично одобрение на потребителя**.
+
+## 5. Изисквания за качество
+- Коректни суми, валути и трансфери, без двойно броене.
+- Корекции в минали периоди, кредитна карта, отрицателни баланси, исторически импорти.
+- Изолация между отделни пространства и коректни права в общото пространство.
+- Пълна локализация **bg/en** и тестове за липсващи преводи/формати.
+- Ръчно одобрение преди AI/OCR да запише транзакция.
+- Само синтетични касови бележки, документи, тестове и конфигурация в публичното GitHub хранилище.
+- Минимални, обосновани промени и проверки за сигурност, съвместимост и регресии.
+
+## 6. Текущо ограничение
+**Не се започва функционална реализация**, докато потребителят не одобри съответното бизнес правило, MVP обхват, архитектурата и първите задачи.

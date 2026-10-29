@@ -1,53 +1,60 @@
-# Technical direction — non-binding draft (2026-10-29)
+# Техническа посока — предварителна архитектура (чернова)
 
-This document proposes a modern **modular monolith**, not a microservice fleet. Final choices, patch versions, authentication and deployment depend on discovery/ADRs.
+**Статус:** предложения, а не окончателни решения. Няма разрешение за реализация, миграции на БД или избор на доставчик преди продуктовото интервю и ADR.
 
-## Established stack and current candidate
-- Backend: **Java 25 LTS**, **Spring Boot 4.1.x** (4.1.2 latest stable checked on 2026-10-29), Spring Security (WebAuthn/passkey support), Maven, Jakarta validation, structured logging and generated OpenAPI contract.
-- Persistence: **PostgreSQL**, versioned forward-only **Flyway** migrations, strict tenant/household authorization at service and query boundaries, transaction/locking semantics specified for concurrent edits.
-- Frontend: **Nuxt 4 + Vue 3 + TypeScript**, **pnpm**, PrimeVue/accessible design system; reuse familiar build approach from the owner's maintained Vue/Nuxt project. Responsive browser UI first, evaluate PWA (offline and native wrappers are decisions, not promises).
-- Tests: JUnit 5, Testcontainers/PostgreSQL, Spring integration/security tests, Vitest, Playwright E2E; synthetic receipts and privacy-safe fixtures.
-- API: versioned HTTP/JSON REST with OpenAPI; server-owned monetary calculations; idempotent mutation/import operations and explicit error contracts.
-- Delivery: Docker Compose for local development, CI PR checks scoped to changed modules with caching, no continuous paid background jobs by default.
+## 1. Архитектурен принцип
+За семейно приложение с малък брой едновременно работещи потребители предпочитаме **добре структуриран модулен монолит**, вместо микросървиси и тежка инфраструктура. Това е предложение, не окончателно решение.
 
-Official links:
+Възможни логически модули: `Identity`, `Workspace`, `FinancialAccounts`, `Transactions`, `Products`, `Receipts`, `Budgets`, `Reports`, `BluecoinsImport`.
+
+## 2. Предложен технологичен стек
+- **Backend:** Java 25 LTS; Spring Boot 4.1.x/Spring Security; Maven; Jakarta Validation; OpenAPI спецификация; структурирани логове. Точните актуални и съвместими версии се проверяват **при старта на реализацията**.
+- **База данни:** PostgreSQL, Flyway за миграции и ясно дефинирано поведение при конкурентни редакции.
+- **Frontend:** Nuxt 4, Vue 3, TypeScript, pnpm, Pinia и достъпна библиотека от UI компоненти; адаптивен изглед за браузър и телефон.
+- **Мобилно:** първоначално се обсъжда инсталиращ се PWA; при необходимост — Capacitor и публикуване в App Store/Google Play. **Решението е отворено.**
+- **Тестове:** JUnit 5, Testcontainers с PostgreSQL, интеграционни/security тестове, Vitest и Playwright с измислени данни.
+- **API:** HTTP/JSON с OpenAPI; сървърът е отговорен за финансовите изчисления и разрешенията. Идемпотентност при импорт и запис.
+- **Локална среда:** Docker Compose. CI с кеширане и проверки само когато е необходимо.
+
+## 3. Продуктови инварианти с архитектурно отражение
+- **Разлика между `Workspace` и `FinancialAccount`:** в общото пространство всички участници виждат всички финансови сметки и транзакции. Отделните пространства трябва да бъдат изолирани на всяко ниво.
+- Потребител може да въведе транзакция от **всяка** финансова сметка в общото пространство. `createdBy` е само одит; **няма `payer` или `beneficiary`**.
+- Начален баланс ≠ приход; трансфер ≠ приход/разход; погасяване на кредитна карта ≠ нов разход. Обикновените сметки могат да имат отрицателни баланси.
+- Кредитни карти поддържат дълг, лимит и остатък; разходите за лихви и такси трябва да се отчитат отделно.
+- Историческата редакция трябва да е възпроизводима и да актуализира отчетите. Възможни са счетоводни записвания/ревизии; точната реализация ще се опише с ADR.
+- Не се допуска двойно броене на артикулите спрямо главната транзакция.
+
+## 4. Много валути — минимални свойства
+- Система с една избрана **основна валута за справките**, но много валути за операции. Обхватът на основната валута (например пространство) и промяната ѝ ще бъдат уточнени.
+- Съхраняват се оригинална сума/валута, сума в основна валута, използван обменен курс, посока, източник/ръчна корекция и дата на курса.
+- Отделно ще уточним валутата на финансовата сметка и реалната сума, с която банката я е дебитирала; тя може да е различна от изчислената стойност.
+- Не използваме `float`/`double` за пари. Изискват се точни десетични числа, ясно правило за закръгляне и времева консистентност.
+- При импорт от Bluecoins липсващи курсове или продуктови редове не се „попълват“ по догадка.
+
+## 5. Езици и локализация
+**Задължително** `bg` и `en`:
+- всички менюта, полета, грешки, потвърждения, известия, категории по подразбиране и помощни екрани;
+- преводими текстове чрез i18n ресурси, не твърдо зададени стрингове в UI и бизнес логика;
+- локализиране на дати, времена, часова зона, валути, десетичен и хиляден разделител;
+- съхраняване на потребителски създадени имена на категории и продукти **без автоматично променяне на написания от потребителя текст**;
+- езиков избор на потребителя; първоначален език и поведение при липсващ превод предстоят за решение;
+- локализирани PDF и XLSX/CSV заглавия, когато отчетният формат го изисква; ако CSV има машинен формат, това се описва отделно;
+- i18n тестове за `bg` и `en`.
+
+## 6. Сигурност и поверителност
+- Предпочита се **passwordless** вход, например passkeys/WebAuthn, но трябва да има сигурно създаване на профил, възстановяване след загубен телефон и повторна регистрация на устройство. Google/Apple или magic links са алтернативи за обсъждане.
+- `Workspace` е граница за сигурност: сметки, транзакции, документи, бюджети, импорти, търсене и експорти не могат да се виждат между различни пространства без разрешение.
+- Права за **редакция/изтриване** и администраторски действия все още са отворени; видимостта на всички сметки и възможността за въвеждане на транзакции в общо пространство са потвърдени.
+- Защитени cookies/сесии, TLS, CSRF защита, rate limiting, контрол върху файлове и тип/размер, временни линкове към частно съхранени документи.
+- Реални касови бележки могат да съдържат лична информация; не се записват в публични логове/репозитории/тестове. OCR доставчик/задържане на документи се избира след решение за сигурността.
+- Експорт/изтриване/backup и проверка на възстановяването се планират предварително.
+
+## 7. Нефункционални изисквания и ADR
+Предстоят решения за: хостинг и бюджет за инфраструктура; такси/лимити на AI и валутни курсове; формат на миграцията; офлайн режим, конфликтни редакции, ретенции, възстановяване; производителност на многогодишни справки и XLSX; мониторинг; backup; предупреждения при отрицателен баланс; версии на всички зависимости.
+
+**Не добавяме Kafka, Kubernetes, microservices, event sourcing или сложна обработваща инфраструктура без реална нужда.**
+
+Полезни официални препратки:
 - https://docs.spring.io/spring-boot/
 - https://docs.spring.io/spring-security/reference/servlet/authentication/passkeys.html
 - https://nuxt.com/docs
-
-## Security baseline
-- No custom password database unless a clear need emerges; assess **passkeys/WebAuthn** plus a safe onboarding and lost-device recovery flow. Google/Apple/email magic link are possibilities, not approved alternatives.
-- Household-scoped authorization on **all** objects, imports, downloads, queries and aggregates. Prevent IDOR, cross-workspace leaks and privilege escalation.
-- CSRF protection appropriate to the browser/session strategy; hardened cookies, rate limiting, TLS and session invalidation.
-- Cryptographically strong invite/recovery tokens, scoped expiration, audit and revocation.
-- Receipts may expose names, locations, payment identifiers and personal details. Separate secure object storage with short-lived access; validate file content/size and block unsafe uploads.
-- If any external OCR/AI provider is used, require explicit provider/privacy/retention decisions, avoid logging personal document text, and offer fallback manual entry.
-- Backups, restore drills and export/delete capabilities; no assumptions that 'cloud' implies safe backups.
-- Public GitHub repository contains **only synthetic test data**. Never put production environment or financial content into issues, PRs, fixtures, screenshots, or CI logs.
-
-## Financial correctness baseline
-- Decimal money arithmetic and currency-specific rounding; stable type definitions.
-- Separate expense, income, transfer and (if approved) refund behaviors.
-- Receipt item amounts are not an independent extra expense in addition to their parent transaction.
-- No generated financial entry from OCR without an explicit human approval action.
-- Include version/concurrency control for edits, audit metadata, and idempotency for upload/import.
-
-## Architecture decisions still required
-1. Server and domain boundaries (household/account/transaction/receipt/catalog/report) and optional Spring Modulith conventions.
-2. Hosting and operational cost ceilings; object storage/provider; encrypted backups.
-3. Email/passkey enrollment, social identity support, safe recovery, mobile browser behavior.
-4. Offline local drafts, outbox/sync/conflict rules, and PWA service worker boundaries.
-5. Document processing pipeline/provider/model, queue architecture, retries, compensation and deletion.
-6. Query/report performance and export generation strategy for multi-year item-level history.
-7. Whether/how the public 2023 code is retained, archived, or superseded.
-8. Exact dependency patch versions to be pinned **at implementation start**, with compatibility and security checks.
-
-## Deliberate exclusions
-No Kafka, distributed microservices, elaborate event sourcing, Kubernetes, or complex subscriptions solely for perceived modernity. Add infrastructure only when a confirmed workflow or measurable constraint demands it.
-
-## A1 confirmed direction
-- **No payer/beneficiary field:** transactions reference financial accounts; `createdBy` is audit-only.
-- User-defined account names; opening balances excluded from income, transfers excluded from expense/income, credit-card debt treated as liability.
-- Account visibility is set for selected household members. Authorization covers reports, exports, transfers, attachments and audit, not just account detail screens.
-- Historical transaction edits must correct calculated balances and period statistics; accounts with history are archived instead of destroyed.
-- No application code or dependencies until implementation scope is approved.

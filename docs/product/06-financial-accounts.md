@@ -1,6 +1,6 @@
 # Financial accounts — A1 working specification v0.1
 
-**Status:** core capabilities accepted, critical edge cases open. See [master discovery](https://github.com/HristoManov91/family-finance/issues/1) and the decision log.
+**Status:** core capabilities accepted, critical edge cases open. See [master discovery #1](https://github.com/HristoManov91/family-finance/issues/1), [accounts discovery #2](https://github.com/HristoManov91/family-finance/issues/2), and the decision log.
 
 ## Confirmed core behavior
 - User can create freely named accounts, regardless of whether they represent bank, cash, debit card, credit card, named person or something else.

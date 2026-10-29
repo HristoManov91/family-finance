@@ -2,7 +2,7 @@
 
 Status: **DISCOVERY / NOT READY FOR IMPLEMENTATION**  
 Source: user discovery request, 2026-10-29. Parent: [Discovery Issue #6](https://github.com/HristoManov91/family-finance/issues/1).  
-Repository choice is **provisional**. This material is deliberately isolated from the 2022–23 application.
+Repository choice is **confirmed**: `HristoManov91/family-finance` is the new public repository; the 2022–23 legacy application code will **not** be imported.
 
 ## Problem and outcome
 Build a family expense and budgeting application that preserves the fast manual transaction experience of Bluecoins but supports shared household workflows and item-level purchase intelligence. It should work well both on phones and in a desktop browser.

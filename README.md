@@ -22,6 +22,6 @@
 3. GitHub епики и малки задачи, с критерии за приемане и тестове, на български и английски.
 4. Codex реализира отделни задачи чрез Draft PR; независима проверка и изрично разрешение преди merge.
 
-Водещо [Issue #1 — продуктов план](https://github.com/HristoManov91/family-finance/issues/1). [Issue #2 — финансови сметки](https://github.com/HristoManov91/family-finance/issues/2).
+Водещо [Issue #1 — продуктов план](https://github.com/HristoManov91/family-finance/issues/1). [Issue #2 — финансови сметки](https://github.com/HristoManov91/family-finance/issues/2). [Issue #4 — валутни курсове](https://github.com/HristoManov91/family-finance/issues/4). **[Issue #5 — транзакции и артикули](https://github.com/HristoManov91/family-finance/issues/5).**
 
 **Поверителност:** това хранилище е публично. Никога не добавяйте реални касови бележки, извлечения, семейни суми, лични данни, токени, пароли или ключове. Примерните данни са изцяло измислени.

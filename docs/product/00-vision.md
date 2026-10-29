@@ -1,50 +1,47 @@
-# Family Finance — Product Vision (Draft v0.1)
+# Продуктова визия — Family Finance (чернова v0.3)
 
-Status: **DISCOVERY / NOT READY FOR IMPLEMENTATION**  
-Source: user discovery request, 2026-10-29. Parent: [Discovery Issue #6](https://github.com/HristoManov91/family-finance/issues/1).  
-Repository choice is **confirmed**: `HristoManov91/family-finance` is the new public repository; the 2022–23 legacy application code will **not** be imported.
+**Статус: проучване.** Водеща задача: [Issue #1](https://github.com/HristoManov91/family-finance/issues/1). Това е спецификация на български; бъдещите GitHub Issues са на български и английски.
 
-## Problem and outcome
-Build a family expense and budgeting application that preserves the fast manual transaction experience of Bluecoins but supports shared household workflows and item-level purchase intelligence. It should work well both on phones and in a desktop browser.
+## 1. Проблем и цел
+Bluecoins е удобен за ръчно въвеждане и базова отчетност, но искаме уеб и мобилно приложение с истинска семейна работа, подробни артикули и касови бележки, съпоставими цени, обобщения и контрол върху бюджета. Простото въвеждане на единичен разход трябва да остане бързо.
 
-## Confirmed user needs (requirements, not implementation decisions)
-- R-001 Record expenses and income, with a configurable monthly spending limit and/or monthly income.
-- R-002 Enter transactions manually with name, amount, date, selected source/destination financial account, required primary category where applicable, optional subcategory, optional free-text description, and optional merchant.
-- R-003 A transaction may contain one or many items. Items have a name, amount/price, a category and optional subcategory; preserve quantity/weight when known.
-- R-004 Attach a receipt/document, including a PDF or photo, and generate a **reviewable draft** transaction with extracted items.
-- R-005 Edit the proposal before saving: transaction-level attributes and specific item rows can be corrected independently.
-- R-006 Run configurable weekly, monthly, quarterly and other-period reports by transaction name, item/product, category, subcategory and other useful dimensions.
-- R-007 Browser and mobile usage.
-- R-008 Multiple independent users collaborate through selectively shared financial accounts. Each user can choose who may see an account. Spending is associated with the account used, **not with an additional payer or beneficiary field**.
-- R-009 Add and manage user-defined categories and subcategories, and use expressive icons/images in the UI.
-- R-010 Export data and reports to **PDF, native XLSX, and CSV**.
-- R-011 Support modern passwordless authentication, browser use and an installable Android/iPhone experience (PWA/native packaging decision pending).
-- R-012 Preserve historical Bluecoins transaction data even if new per-item fields do not exist; detail requirements through staged interviews and generate GitHub/Codex work only afterward.
+## 2. Потвърдени изисквания
 
-## Candidate capabilities (NOT YET APPROVED)
-Recurring bills; refunds and returns; quantities and price-per-unit; merchant normalization; receipt deduplication; budget carryover; saved reports and filters; migration from Bluecoins; offline entry and later sync; backups and recovery; optional chat-based ingestion; AI product-name normalization; time-based price comparisons.
+| ID | Изискване |
+| --- | --- |
+| R-001 | Добавяне на приходи, разходи, трансфери, месечен лимит и/или месечни приходи. |
+| R-002 | Потребителят може да създава и именува произволни финансови сметки, да задава начален баланс извън приходите и да избира сметка при транзакция. |
+| R-003 | Поддържат се обикновени сметки с допустим отрицателен баланс и кредитни карти с дълг, лимит и оставащ кредит. Погасяването на кредитна карта е трансфер; лихвите и таксите са разход. |
+| R-004 | Една транзакция има име, сума, дата, сметка, главна категория, незадължителна подкатегория, незадължително текстово описание и магазин, когато е известен. |
+| R-005 | Транзакция може да съдържа един или много артикули с име, количество/мерна единица/грамаж при налични данни, стойност и категория/подкатегория. |
+| R-006 | Касова бележка като снимка или PDF може да се преобразува в **редактируема чернова**; човек преглежда и потвърждава всички данни преди запис в счетоводните справки. |
+| R-007 | Поддържат се ръчно създавани категории и подкатегории, преименуване/архивиране и подходящи икони и изображения. |
+| R-008 | Седмични, месечни, тримесечни и произволни периоди; търсене и сравнение по транзакция, продукт, категории, магазин и сметка. |
+| R-009 | Съвместно **семейно пространство**, където всички негови участници виждат всички финансови сметки, приходи, разходи, трансфери и справки. Всеки може да записва транзакция от която и да е сметка в пространството, включително именувана за друг човек. |
+| R-010 | **Няма финансово поле „платец“ или „получател на ползата“.** Кой е създал/редактирал запис може да се пази само за одит. Отделна лична отчетност изисква отделен акаунт/пространство, а не скрити сметки в общото. |
+| R-011 | Различни валути, една основна валута за отчетност. За чужда валута се записват **оригинална сума и валута, изчислена стойност в основната валута и данни за курса**. |
+| R-012 | Експорт в PDF, реален Excel XLSX и CSV. |
+| R-013 | Уеб приложение и инсталиращо се приложение за Android и iPhone. PWA/публикуване в магазини ще уточним отделно. |
+| R-014 | **Пълен интерфейс на български и английски**, избираем от потребителя. Документацията е на български, GitHub Issues — на двата езика. |
+| R-015 | Съвременен вход без парола, сигурен семеен достъп, възстановяване, резервни копия, експорт/изтриване на собствени данни. |
+| R-016 | Импорт на дългогодишната история от Bluecoins. Нововъведените атрибутни полета могат да останат празни при стари транзакции. |
+| R-017 | Корекции на минали транзакции актуализират балансите и отчетите; сметки с история се архивират вместо да се унищожават. |
 
-## Confirmed financial-account semantics
-- User creates freely named accounts and supplies an opening balance that is **not income**.
-- Expenses reduce an ordinary asset-account balance; income increases it.
-- Internal transfers move funds but must not be counted as income or spending.
-- Credit cards have debt/liability semantics; repayments must not double count spending.
-- Historical edits and deletions correct derived balances and reports; archived accounts retain existing history.
-- No transaction payer field; creator/editor audit metadata is separate.
-- Account visibility can be granted selectively to other users.
+## 3. Продуктови принципи
+1. **Сметката е източникът на парите, не потребителят.** Човек може да въвежда транзакция от всяка сметка в общото пространство.
+2. **Пълна прозрачност вътре в общото пространство**, без вътрешно скриване на финансови сметки; отделните пространства са граници за достъп.
+3. **Коректно финансово пресмятане:** началният баланс не е приход; вътрешният трансфер не е приход/разход; плащане по кредитна карта не дублира покупки; артикулите не дублират главната транзакция.
+4. **Човешка проверка на AI:** разчитането е предложение, при неяснота не измисляме стойности.
+5. **Бързо ръчно въвеждане:** подробните артикули не трябва да са задължителни за всяко плащане.
+6. **Възпроизводими валутни изчисления:** показаната главна валута не заличава оригиналната.
+7. **Пълна история, проследимост и преносимост** на данните.
+8. **Локализация и достъпност:** bg/en за текстове, дати, числа, валути и грешки.
+9. **Само тестови данни** в публичното хранилище.
 
-## Design principles
-1. **Fast ordinary entry:** simple expense entry should require few interactions even with the richer data model.
-2. **No fabricated certainty:** receipt extraction suggests data; user reviews/corrects it, including low-confidence fields.
-3. **Household and account privacy first:** multiple separate identities and permissions, one or more shared workspaces (scope to be agreed).
-4. **Finance correctness:** exact decimal arithmetic, explicit transaction types, consistent totals and non-double-counted transfers.
-5. **Privacy first:** never commit genuine family budgets, receipts, bank details, PII, credentials, logs, or tokens to this public repository.
-6. **Data portability:** import/export, deletion, backup/restore and vendor-independent storage are first-class requirements.
-7. **Accessible and localized:** start with Bulgarian UI and euro currency as a *candidate*, not a fixed restriction; determine other locales/currencies during discovery.
-8. **Testable by design:** product invariants, edge cases, and examples precede implementation tasks.
+## 4. Предложения, които още не са одобрени
+Автоматични повтарящи се разходи, продуктов каталог и псевдоними, история на цена/единица, офлайн въвеждане и синхронизация, бюджети с пренасяне на остатък, категории по правила, прикачени файлове и персонални шаблони, API за разговор с ChatGPT, push известия, PWA + Capacitor, допълнителни валутни провайдъри.
 
-## Not in scope without separate approval
-Bank-login scraping, autonomous payments, paid subscriptions, public social features, inventory, shopping-list automation, retail promotions, or mass AI data sharing. Historical ideas in the 2023 README are not automatically part of this project.
+## 5. Граници и отворени случаи
+Банкови интеграции и автоматични плащания не са разрешени. За обсъждане: точният модел на отделните акаунти/пространства, права за редакция/изтриване, котировки за валути, сумата, реално списана от картата, отстъпки и сторно, категоризиране на смесени касови бележки, миграция и архитектура.
 
-## Definition of discovery completion
-Signed-off domain model, category rules, family membership and permissions, receipts review state machine, budget semantics, export and import contracts, deployment/authentication ADRs, prioritized MVP/non-MVP boundaries, and a dependency-ordered implementation backlog with acceptance criteria.
+**Завършен продуктови анализ:** всички правила и сценарии са одобрени, след което правим епики и малки задачи за Codex.

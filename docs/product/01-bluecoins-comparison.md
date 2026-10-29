@@ -1,6 +1,8 @@
-# Bluecoins reference and gap analysis (2026-10-29)
+# Сравнение с Bluecoins — изходна точка
 
-Sources (official documentation):
+**Цел:** да запазим полезните потоци от Bluecoins и да определим какво надграждаме. Това не е твърдение, че новото приложение вече има функционалностите.
+
+Официални материали:
 - https://www.bluecoinsapp.com/guide/transactions/
 - https://www.bluecoinsapp.com/guide/budget/
 - https://www.bluecoinsapp.com/guide/categories/
@@ -9,28 +11,29 @@ Sources (official documentation):
 - https://www.bluecoinsapp.com/settings/online-sync/
 - https://www.bluecoinsapp.com/faq/
 
-These are research notes, NOT claims that our replacement is already built. Do not copy Bluecoins UI art, logos, trademarked branding, or code.
-
-| Area | Bluecoins documented behavior | Our intended direction / open questions |
+| Област | Bluecoins — отправна точка | Family Finance — цел |
 | --- | --- | --- |
-| Transactions | Expense, income, transfer; amount, category, account, date/time, payee, notes, tags, attachments | Fast transaction entry with explicit source/destination account, optional note, merchant and detailed product lines; **no separate payer field** |
-| Splits | One transaction can be split into multiple category/account/note legs | Distinguish **financial allocation** from **itemized receipt lines**; determine whether both are required |
-| Category taxonomy | Group/type/category hierarchy and configurable budgets | Main category + optional subcategory, editable on both header and lines; define inheritance |
-| Budgets | Category/type daily-through-annual and custom month-by-month budgets, with budget-vs-actual reports | Family-wide monthly ceiling, possibly incomes, category/member limits and rollover |
-| Filters and reports | Date ranges, categories, accounts, tags, status, charts and exports | Filter by product, quantities, merchant, category, **funding account**, accessible time periods and account visibility |
-| Family sharing | Shared sync/backup through linked cloud account | Separate users, per-account member visibility and permissions; private financial data must not leak |
-| Web | No desktop/web application per official FAQ | Full browser support |
-| Receipts | Store attached files/images | Image/PDF -> structured draft, validation, editable lines, approval |
-| Data portability | CSV/QIF transaction import; PDF/CSV/HTML report exports | Safe migration (if approved); genuine XLSX generation; stable data export and backup |
+| Транзакции | Приход, разход, трансфер, дата, сметка, категория, бележка | Запазваме бързото въвеждане; имаме артикули, валути и основна валута за отчет |
+| Финансови сметки | Каса, банки, карти, наличности | Произволно именуване, начален баланс, трансфери, реални кредитни карти, отрицателен баланс |
+| Разделяне на транзакции | Разделени категории/суми | Разделяме **финансово разпределение** и **реални артикули в касова бележка** — да се уточни дали и двете са нужни |
+| Категории | Йерархия и бюджети | Главна категория + незадължителна подкатегория, редакция на ниво транзакция и ред, иконки |
+| Бюджети | Периодични лимити и отчетност | Семеен лимит и/или приходи, разширена аналитика |
+| Филтри и графики | Дата, сметка, категория, етикети | Търсене по продукт, количество, магазин, единична цена, оригинална/основна валута |
+| Семейна работа | Споделена синхронизация чрез външен облачен акаунт | Отделни идентичности в **общо напълно видимо семейно пространство** |
+| Уеб | Няма пълноценна уеб версия според официалните им материали | Поддръжка на браузър |
+| Касови бележки | Прикачени документи | PDF/снимка → проверяема чернова с артикули и категоризация |
+| Преносимост | Импорт/експорт на определени формати | Надеждна Bluecoins миграция и PDF/XLSX/CSV изход |
 
-## Findings that affect migration
-Bluecoins' documented CSV templates represent a transaction with columns such as type, date, item/payee, amount, parent category, category, account, labels, status, and split. They do **not** promise structured per-product receipt data. Importing the historical transaction ledger may be possible; reconstructing individual products from past aggregate transactions may not be possible.
+## Съществени разлики в модела
+- **Няма поле „кой плаща“.** При запис се избира финансова сметка, независимо кой въвежда транзакцията.
+- **Общото пространство има пълна видимост** за всеки от неговите членове. Ако има нужда от поверителен независим бюджет, използва се отделно пространство/акаунт.
+- **Касовата бележка не е втора транзакция.** Сумата по продуктови редове се сумира към една финансова операция и не се отчита два пъти.
+- **Оригинална срещу основна валута:** при исторически записи запазваме наличната валутна информация и не генерираме измислени курсове.
 
-## Must reproduce carefully before implementation
-- Expense and income must not double count transfers between owned accounts.
-- One transaction can contain split allocations and/or multiple receipt products without confusing the two.
-- Dates, currencies, partial refunds, discounts, duplicate imports, and reconciliation behavior must be explicitly specified.
-- Historical labels/categories must be mapped with a reversible preview before migration.
+## Миграция от Bluecoins
+Трябва да проверим действителния **експорт** от личните данни и съответствията между име, дата, стойност, валута, категория, подкатегория, сметка, бележки, тагове, статус и разделени транзакции. Обявеният CSV формат не гарантира, че всяка покупка е налична по отделни артикули.
 
-## Validation before coding
-Interview the household about exactly which Bluecoins screens/flows they rely on most, and which interactions are frustrating. Screenshots or sample exports may be discussed **privately**, not committed to this public repository.
+Преди окончателен импорт са нужни: предварителен преглед, съпоставка на сметките, проверка на сумите, дубликати, повторяемост на операцията и стратегия за връщане назад. **Реалните експорти не се публикуват в GitHub.**
+
+## Авторски права
+Не копираме марката, иконите, дизайна или изходния код на Bluecoins. Използваме функционалното му поведение като продуктова отправна точка.

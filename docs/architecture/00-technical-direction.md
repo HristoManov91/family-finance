@@ -60,3 +60,6 @@
 - https://docs.spring.io/spring-boot/
 - https://docs.spring.io/spring-security/reference/servlet/authentication/passkeys.html
 - https://nuxt.com/docs
+
+## Блокиращо продуктовo решение преди счетоводна реализация
+**След А3.4:** заглавният тотал на детайлна покупка се изчислява **от активните артикули**, а не от оригиналния тотал на бона, който може да включва изключени чужди артикули. **Въпросът за баланс на реална банкова сметка остава отворен**, ако банката дебитира 50 EUR, а семейството иска да отчете 35 EUR без компенсираща операция. **Не създавайте ledger/posting схема, която предполага едновременно точни банкови салда и игнорирано движение, преди това решение.** Виж [#2](https://github.com/HristoManov91/family-finance/issues/2), [#5](https://github.com/HristoManov91/family-finance/issues/5), `docs/product/06-financial-accounts.md`.

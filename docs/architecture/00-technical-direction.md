@@ -58,6 +58,14 @@
 - **OCR входовете** остават временни, без постоянен архив; **offline OCR не е приет** при облачен OCR provider. Не превръщаме offline queue в постоянен архив на снимки/PDF.
 - **BC-17 ОТХВЪРЛЕНО:** няма capture/read/parse на банкови SMS/push нотификации за автоматични предложения/разходи; не разработваме bank sync чрез това решение.
 
+## BC-5 — технологични ограничения от продуктови решения (30.10.2026)
+- **BC-18 ПРИЕТО:** допълнителен транзакционен **CSV-only импорт**, с preview/mapping/validation, explicit approval, idempotence, audit/rollback и workspace isolation. **QIF/OFX не са одобрени**. Bluecoins migration остава.
+- **BC-19 ПРИЕТО ПО ПРЕПОРЪКА:** full portable **structured workspace export/restore** (дългосрочна преносимост), **без касови снимки/PDF OCR и без auth secrets**. **Не замества** независимите PostgreSQL backup/restore drills или отчетните PDF/XLSX/CSV файлове. Schema versioning, permissions, encryption, restore preview, target workspace / merge vs replace и MVP priority са **ОТВОРЕНИ**. [#20](https://github.com/HristoManov91/family-finance/issues/20).
+- **BC-20 ПРИЕТО:** **Light/Dark/FollowSystem** theme UX, OS/browser само когато System, ръчно избраната Light/Dark устойчива. Per-user vs workspace preference, default, persistence/sync и True Black са отворени.
+- **BC-21 ПРИЕТО:** saved transaction **read-only при отваряне**, изричен **Edit**, без промяна на общите edit/void/audit/restore права или на редактиращата се OCR чернова преди Save. Offline конфликтите и dirty-state UX остават отделно. [#21](https://github.com/HristoManov91/family-finance/issues/21).
+- Всяко бъдещо ADR трябва да включи негативни тестове за **CSV retry без double posting, workspace export/restore consistency/isolation, theme switch без financial mutation, read-only detail без side effects, concurrent offline edits**.
+
+
 ## 7. Нефункционални изисквания и ADR
 Предстоят решения за: хостинг и бюджет за инфраструктура; такси/лимити на AI и валутни курсове; формат на миграцията; офлайн режим, конфликтни редакции, ретенции, възстановяване; производителност на многогодишни справки и XLSX; мониторинг; backup; предупреждения при отрицателен баланс; версии на всички зависимости.
 

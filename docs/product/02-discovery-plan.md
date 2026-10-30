@@ -13,8 +13,8 @@
 | A4 — паралелно проучване | **A4.1:** 1+ снимки на един бон → една транзакция; различни бонове → отделни. **A4.2:** неблокиращо предупреждение за дубликат. **A4.3: РЕШЕНО — НЕ пазим оригинални снимки/PDF/архивни копия в MVP**, временни файлове само за OCR/преглед и изчистване при Save/Cancel/error/timeout. **A4.4:** OCR предлага магазин/дата/час/валута/име ([#6](https://github.com/HristoManov91/family-finance/issues/6)) | Избор на OCR доставчик/политика за временна обработка, грешки, дубликати и privacy; не storage codec/retention в MVP |
 | A5 — месечно бюджетиране, регулярно и напомняния | **A5.1/A5.2** бъдещи/регулярни разходи с auto-paid vs manual confirm за шаблон; **BC-12 ПРИЕТО:** `every N`, край на серия, почивни дни, редактиране едно/бъдещи/всички; **BC-13 ПРИЕТО:** напомняния за приходи и разходи. **A5.3–A5.9** главни категорийни бюджети, всички платени разходи в общото изразходвано. [#8](https://github.com/HristoManov91/family-finance/issues/8), [#10](https://github.com/HristoManov91/family-finance/issues/10), [#17](https://github.com/HristoManov91/family-finance/issues/17) | Празнично преместване, DST/тестове, auto/manual регулярни приходи и канал на напомняне |
 | A6 — сравнение на месеци и отчети | **BC-11 ПРИЕТО:** сравняване на реалните разходи между избрани **месеци**, суми/разлики/главни категории и отваряне на транзакциите; **BC-10 Cash Flow + прогнозна графика НЕ ЗАСЕГА/ИЗВЪН MVP**. Останалите отчети и PDF/XLSX/CSV се проучват. Dashboard, календар, етикети без готови и запазени филтри са приети. [#16](https://github.com/HristoManov91/family-finance/issues/16), [#12](https://github.com/HristoManov91/family-finance/issues/12) | Месечни филтри/графики, исторически FX/refunds, export UX, плащания и бюджетни прогнози |
-| A7 — ПРИЕТО BC-4 ядро / ОТВОРЕНИ детайли | Вход без парола, отделни семейни пространства, bg/en, браузър/Android/iPhone. **BC-14 мобилни widgets ДА**, **BC-15 допълнителен биометричен/PIN app lock НЕ**, **BC-16 офлайн създаване/редакция на обикновени разходи и последващ безопасен sync ДА**, **BC-17 банкови SMS/push автопредложения НЕ**. [#18](https://github.com/HristoManov91/family-finance/issues/18), [#19](https://github.com/HristoManov91/family-finance/issues/19) | Sync conflict UX, offline scope, encryption/retention, widget refresh/privacy, PWA/Capacitor, загубено устройство |
-| A8 | Импорт от Bluecoins, съпоставка, дублиране, архиви, стар BGN | Правила и критерии за миграция |
+| A7 — мобилно/UX | BC-14 widgets ДА, BC-15 app biometric/PIN lock НЕ, BC-16 offline обикновени разходи + safe sync ДА, BC-17 банкови SMS НЕ. **BC-20 Follow System като трета тема ПРИЕТО**, **BC-21 saved transaction read-only→Edit ПРИЕТО**. [#11](https://github.com/HristoManov91/family-finance/issues/11), [#21](https://github.com/HristoManov91/family-finance/issues/21) | Preference scope/default, read-only detail UX, offline conflict/lock screen privacy, PWA/Capacitor |
+| A8 — миграция и архив | Bluecoins historical import продължава; **BC-18 допълнителен CSV-only import, без QIF/OFX**; **BC-19 преносим full structured workspace export/restore по препоръка**, без OCR оригинални снимки/PDF. [#20](https://github.com/HristoManov91/family-finance/issues/20) | CSV mapping/preview/idempotency, backup format/version/crypto/roles/restore UX и MVP приоритет |
 | A9 | Стабилен технологичен стек, инфраструктура, ADR, сигурност, тестове, MVP | Одобрена техническа рамка |
 | A10 | Епики, зависимости, малки Issue-та, критерии, Codex задачи | Готов, изпълним backlog |
 
@@ -90,8 +90,17 @@
 - **BC-15 ОТХВЪРЛЕНО:** без допълнителен PIN/биометричен lock на самото приложение. **Сигурният passwordless вход и OS защита остават**.
 - **BC-16 ПРИЕТО:** офлайн **създаване и редакция на обикновени разходи** и sync след възстановена връзка. **Никакво повторно осчетоводяване, мълчаливо надписване на чужди редакции или достъп между workspaces**. OCR без интернет, останалите операции, client storage/crypto, конфликтна политика и платформи — отворени. [#19](https://github.com/HristoManov91/family-finance/issues/19).
 - **BC-17 ОТХВЪРЛЕНО:** без автоматично извличане на транзакции от банкови SMS/push известия; няма SMS listener/bank sync.
-- **Следва BC-5 — останалите import/export, настройки и read-only transaction UX**, както и точните правила за синхронизация; нищо не е автоматично прието от Bluecoins.
+- **BC-5 РЕШЕН:** CSV-only import ДА (QIF НЕ), преносим full workspace export/restore ДА по препоръка, системна тема ДА, read-only saved transaction→Edit ДА. **Не са одобрени** format/restore permissions, конкретен UX/MVP ред и код. [#20](https://github.com/HristoManov91/family-finance/issues/20), [#21](https://github.com/HristoManov91/family-finance/issues/21).
 
+## BC-5 — приключено high-level интервю, отворени детайли (30.10.2026)
+- **BC-18 ПРИЕТО:** допълнителен **CSV-only import** на транзакции; **QIF/OFX не**. Preview, mapping и human confirm преди posting. Bluecoins migration не отпада.
+- **BC-19 ПРИЕТО ПО ПРЕПОРЪКА:** full structured workspace export/restore за преносимост/многогодишна история; **без касови снимки/PDF**, които не се пазят след OCR. Различно от report export и server PostgreSQL backups; restore format, permissions, crypto, MVP priority отворени.
+- **BC-20 ПРИЕТО:** `Light`, `Dark`, `Follow System` (трета тема) за web/mobile; per-user/workspace preference и initial default отворени.
+- **BC-21 ПРИЕТО:** saved transaction отваря **read-only**, отделен „Редактирай“. Всички общи edit/void/audit права остават, новата/OCR чернова е редактируема.
+- **Функционалните BC-1–BC-5 отговори са записани**, но следват подробни бизнес/UX/security/ADR и MVP приоритизация **преди** реализация.
+
+## Етап Б — Задачи
+След одобрение на всяка предметна област
  създаваме епики: Потребители и пространства; Сметки/транзакции; Категории/продукти; Документи и AI; Бюджети; Справки и експорт; Миграция; UX/i18n/mobile; Инфраструктура и качество.
 
 Всяко реализационно Issue:

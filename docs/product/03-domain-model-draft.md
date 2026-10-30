@@ -30,6 +30,8 @@
 | `MobileWidgetView` | **ПРИЕТО като UX поведение, НЕ схема на БД:** мобилни home-screen widgets за бърз вход към разход, избрани салда и общ месечен бюджет/progress. Не публикуват финансов запис сами; платформи, privacy на сумите, период на refresh и локална/централна актуалност — ОТВОРЕНИ. [#18](https://github.com/HristoManov91/family-finance/issues/18). |
 | `OfflinePendingExpense` / `SyncCommand` | **ПРИЕТО като поведение, НЕ техническа същност или одобрена DB таблица:** локално **добавяне и редакция на обикновени разходи** без мрежа, със състояние **очаква синхронизация** до успешно server потвърждение. Retry трябва да е идемпотентен, конфликти между членове **не** се решават с тих last-write-wins, workspace isolation и одит остават. Точните client storage/command IDs/merge алгоритъм — **ОТВОРЕНИ**. [#19](https://github.com/HristoManov91/family-finance/issues/19). |
 | `Budget` | **САМО главна разходна категория + календарен месец + потребителски лимит**, в рамките на workspace. **Няма отделен независим общ бюджет или бюджет на подкатегория**. Общият месечен бюджет е **изчислен сбор**; използването има progress bar/процент. Съхраняване на редакции/исторически версии още се уточнява ([#10](https://github.com/HristoManov91/family-finance/issues/10)). |
+| `CsvImportBatch` | **ПРИЕТО като концептуална функция, НЕ схема:** CSV-only import с preview/mapping/human confirmation и защита от duplicate posting; **QIF/OFX не са одобрени**. [#20](https://github.com/HristoManov91/family-finance/issues/20). |
+| `WorkspacePortableExport` / `WorkspaceRestore` | **ПРИЕТО ПО ПРЕПОРЪКА, НЕ готова таблица/формат:** пълен преносим export/restore на структурирани данни на едно workspace, **без OCR оригинални снимки/PDF и без auth secrets**. Различно от report export и сървърните PostgreSQL backups. Version/permissions/encryption/restore behavior/MVP priority ОТВОРЕНИ. [#20](https://github.com/HristoManov91/family-finance/issues/20). |
 | `ImportBatch` | Историческа миграция от Bluecoins с съпоставка, преглед, валидация, дубликати. |
 | `TransactionDiscount` / `Adjustment` | Реални **намаления на артикул или цял документ**, а не отделен обект „купон“. Ваучерите за храна са паричен ресурс, не скидка; други такси/закръгляване са отворени. |
 | `ReceiptExtraction` | OCR предлага стойности/артикули с несигурности; човек редактира, добавя или **изтрива** предложени редове. Изтриването променя сумата с **неблокиращо уведомление**; **Запази** записва само останалите артикули и сбор. Оригиналният файл е само източник, не принудителен тотал. |
@@ -123,6 +125,13 @@
 - **BC-15 ОТХВЪРЛЕНО:** без отделно app PIN/биометрично отключване при отваряне. **Passwordless auth, OS/device security и локална privacy не отпадат**.
 - **BC-16 ПРИЕТО:** създаване и редакция на **обикновени разходи офлайн**, синхронизиране при мрежа. Няма повторни записвания, тайни `last-write-wins`, cross-workspace leakage. **Локалните баланси са предварителни, докато няма server sync**. Offline OCR, приходи, трансфери, потребителски категории и други операции **не са автоматично одобрени**; техническото изпълнение е за ADR ([#19](https://github.com/HristoManov91/family-finance/issues/19)).
 - **BC-17 ОТХВЪРЛЕНО:** без автоматично четене и използване на банкови SMS/push нотификации за чернови или операции.
+
+## BC-18–BC-21 — преносимост, системна тема и transaction detail
+- **BC-18 ПРИЕТО:** CSV-only import, **не QIF/OFX**, preview/mapping/validation/confirm/dedup; Bluecoins history import остава.
+- **BC-19 ПРИЕТО ПО ПРЕПОРЪКА:** пълен структурен workspace export/restore, без OCR оригинали и auth secrets, отделен от отчети/сървърни backup-и; формат, roles, encryption, restore UX и MVP приоритет отворени. [#20](https://github.com/HristoManov91/family-finance/issues/20).
+- **BC-20 ПРИЕТО:** `Light | Dark | FollowSystem` като UX режими, не автоматично избрана DB enum; personal/workspace preference и default остава отворен. [#11](https://github.com/HristoManov91/family-finance/issues/11).
+- **BC-21 ПРИЕТО:** saved transaction **read-only** при отваряне, отделен `Edit`; споделените права/одит/restore остават, нова/OCR чернова е редактираща се преди Save, offline conflict защити остават. [#21](https://github.com/HristoManov91/family-finance/issues/21).
+
 
 ## Отворени решения
 Администраторски роли и покани; конверсия/трансфери между различни валути, смяна на основната валута, отстъпки/ваучери и връщания; каталог с продукти; офлайн синхронизация, **конкурентно редактиране и възстановимо изтриване**, детайли за одита.

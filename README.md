@@ -1,25 +1,46 @@
-# Family Finance
+# Family Finance — семейни финанси
 
-A family finance management application focused on **shared and private financial accounts**, fast income/expense/transfer tracking, configurable budgets, item-level receipt capture, and rich reports.
+**Статус: продуктово планиране.** Все още не е разрешена реализация на функционалности.
 
-> **Status: product discovery, not implementation.** Requirements, domain rules, security, platform choices, and the implementation backlog are being defined through staged interviews. The repository is public, but financial data is private.
+Приложение за семейни приходи, разходи, финансови сметки, бюджети, касови бележки и анализ по продукти. Целта е да запазим удобното въвеждане на разходи от Bluecoins и да добавим подробна структура за покупки, обща работа и автоматизирано разпознаване на бележки.
 
-## Core direction
-- Browser and installable Android/iPhone experiences (distribution and offline strategy to be decided).
-- User-created accounts with custom names, initial balances, income, expenses, and transfers.
-- Optional sharing of each financial account with selected household members.
-- Transactions link to the **funding account**, not a separate "who paid" field.
-- One transaction may have multiple purchased products, categories, quantities, and optional store details.
-- Assisted image/PDF receipt import produces an **editable draft**, never an automatically approved expense.
-- Reports and exports: PDF, XLSX and CSV; import historical transactions from Bluecoins.
-- Modern passwordless sign-in (mechanism and recovery to be selected).
+## Основни изисквания
+- **Общо семейно пространство:** всеки участник вижда всички финансови сметки и транзакции, **може да редактира/отменя всяка транзакция с история и възстановяване**. Личната отчетност е в отделно пространство. **Един вход** позволява превключване между няколко пространства.
+- **Финансови сметки:** потребителски имена, начален баланс (не е приход), приходи, разходи, трансфери, кредитни карти, възможен отрицателен баланс. Всеки член на общото пространство може да въведе разход от всяка сметка там. **Няма поле „кой е платил“.**
+- **Транзакции и артикули:** разходът се именува свободно; без артикули сумата се въвежда ръчно, **с артикули сумата е сбор от останалите след редакцията редове**. При **ИЗТРИВАНЕ** на OCR артикул той изчезва от черновата, сумата се преизчислява, показва се **неблокиращо уведомление**, а при Запази **няма скрити/неактивни редове или остатък**. Финансовата сметка се променя с **крайния одобрен разход**.
+- **„Добави разход“ → ръчно или снимка/PDF/фактура** → OCR попълва каквото може и маркира несигурните стойности → пълен човешки преглед, редакция, добавяне или **изтриване** → неблокиращо уведомление при променена сума → **Запази само одобрените артикули и сбор**. Оригиналният документ не налага равнение към първоначалната си сума.
+- **Продуктова памет:** след потвърдена транзакция приложението запомня коригираните продуктови имена/категории и ги предлага при следваща покупка **в същото финансово пространство**; не променя старите записи и не се обучава от изтрити OCR предложения. [Каталог #9](https://github.com/HristoManov91/family-finance/issues/9).
+- **Категория на подробна покупка:** заглавната главна категория е **незадължителна**; справките са по категории на артикулите. **Предложение:** информативен надпис „Смесени категории“ при няколко главни категории, **не действителна категория**.
+- **Документи (MVP):** **един бон може да се сканира с няколко снимки → една транзакция**, два различни бона се качват поотделно. Дубликатите водят до предупреждение, OCR предлага магазин/дата/час/валута/име. **Снимките/PDF се използват само временно за разчитане и активен преглед; след Запази/Откажи НЕ се пазят файлове или прикачени документи.** Остават **само потвърдените данни** в базата; няма постоянно R2/S3/storage за бонове в MVP ([решение](docs/product/14-attachment-storage.md)).
+- **Бюджети и справки:** месечни лимити **само по главни категории**, общ лимит=SUM(лимити), **без глобално независимо поле и без подкатегорийни бюджети**. **ВСИЧКИ платени разходи** (вкл. категории без лимит) участват в общия %, който може да е над 100%. **BUD-04: БЕЗ ROLLOVER** — всеки нов календарен месец започва с пълния зададен лимит на категорията, **без пренасяне на остатъци/превишения и без нулиране на реални сметки**. Progress bar; планирано/реално отделно; регулярни приходи auto/manual по шаблон. `TODAY`, визуални прагове и push известия — предложения/отворени. [#10](https://github.com/HristoManov91/family-finance/issues/10).
+- **Валути:** **всяко пространство избира собствена основна валута**; сметките може да са в други. Запазват се оригинална сума/валута, преизчислена стойност, курс и **реално списана по сметка сума**. **Одобрено:** ЕЦБ като основен източник, Frankfurter като резервен, **ежедневна проверка в 18:30 `Europe/Sofia`**, история и последен публикуван курс към датата на операцията през почивни/празници ([FX #4](https://github.com/HristoManov91/family-finance/issues/4)).
+- **Миграция и преносимост:** Bluecoins historical import остава. **BC-18 CSV-only import** от други приложения, **без QIF/OFX**. **BC-19 по препоръка пълен преносим export/restore на структурирано workspace съдържание**, отделно от аналитични PDF/XLSX/CSV отчети и независими server PostgreSQL backups, **без OCR снимки/PDF оригинали**. Format/restore permissions/security/MVP priority остават отворени. [#20](https://github.com/HristoManov91/family-finance/issues/20).
+- **Външен вид:** **Светла, Тъмна и BC-20 „Следвай системата“ са ПРИЕТИ** за web/mobile. System следва OS/browser, ръчно Light/Dark не се отменя. Per-user/workspace scope, first-use default и True Black/AMOLED остават отворени. [#11](https://github.com/HristoManov91/family-finance/issues/11), [#21](https://github.com/HristoManov91/family-finance/issues/21).
+- **Bluecoins BC-1:** **ПРИЕТИ** са настройваем dashboard (избиране/скриване/пренареждане на карти), финансов календар с преглед по дата, **етикети САМО потребителски създадени — без никакви DEFAULT етикети**, и запазени именувани филтри. **ОТХВЪРЛЕН** е самостоятелен Net Worth отчет/графика/карта; салдата на сметки/кредитни карти остават. [Gap audit](docs/product/17-bluecoins-feature-audit.md), [#12](https://github.com/HristoManov91/family-finance/issues/12), [#13](https://github.com/HristoManov91/family-finance/issues/13), [#14](https://github.com/HristoManov91/family-finance/issues/14).
+- **Езици:** цялото приложение на **български и английски**; документацията на български, GitHub Issues на двата езика.
+- **Платформи:** браузър, Android и iPhone; предпочитано инсталиране на телефона. PWA/App Store подходът не е окончателно решен.
+- **Вход:** съвременна автентикация без парола, с безопасно възстановяване на достъпа.
 
-## Planning process
-1. Interview for a complete, unambiguous product specification and edge cases.
-2. Record approved choices separately from suggestions and open questions.
-3. Prepare epics and implementation issues, with acceptance criteria, tests, dependencies, and Codex-ready prompts.
-4. Implement only after scope is agreed, using Draft PRs and independent review; no auto-merge.
+## Работен процес
+1. Интервюта и подробно изясняване на функционалности и гранични случаи.
+2. Версионирана спецификация, решения, ADR и приоритети за MVP.
+3. GitHub епики и малки задачи, с критерии за приемане и тестове, на български и английски.
+4. Codex реализира отделни задачи чрез Draft PR; независима проверка и изрично разрешение преди merge.
 
-**Privacy:** Do not put real family receipts, balances, financial details, user data, credentials, tokens or production exports into this public repository. Use fictional samples only.
+Водещо [Issue #1 — продуктов план](https://github.com/HristoManov91/family-finance/issues/1). [Issue #2 — финансови сметки](https://github.com/HristoManov91/family-finance/issues/2). [Issue #4 — валутни курсове](https://github.com/HristoManov91/family-finance/issues/4). **[Issue #5 — транзакции](https://github.com/HristoManov91/family-finance/issues/5)**, [#6 — документи](https://github.com/HristoManov91/family-finance/issues/6), [#7 — категории](https://github.com/HristoManov91/family-finance/issues/7), [#8 — бъдещи и регулярни разходи](https://github.com/HristoManov91/family-finance/issues/8), [#9 — каталог/продуктова памет](https://github.com/HristoManov91/family-finance/issues/9), [#10 — месечни бюджети](https://github.com/HristoManov91/family-finance/issues/10), [#11 — светла/тъмна тема](https://github.com/HristoManov91/family-finance/issues/11), [#12 — Bluecoins сравнение](https://github.com/HristoManov91/family-finance/issues/12).
 
-_The detailed discovery documents are being migrated from the previous planning repository into this new codebase. No legacy application code is being imported._
+**Поверителност:** това хранилище е публично. Никога не добавяйте реални касови бележки, извлечения, семейни суми, лични данни, токени, пароли или ключове. Примерните данни са изцяло измислени.
+
+**Бъдещи и регулярни РАЗХОДИ/ПРИХОДИ:** бъдещ еднократен разход става автоматично ПЛАТЕН на зададената дата, без баланс преди това. **Всеки регулярен шаблон — разходен или приходен — избира автоматично ПЛАТЕН/ПОЛУЧЕН на падежа или чака ръчно потвърждение.** Само автоматично/ръчно отчетените операции променят сметките, очакваните приходи не са действително получени. Това не е банково потвърждение. [#8](https://github.com/HristoManov91/family-finance/issues/8).
+
+**Нови продуктови спецификации:** [Dashboard + финансов календар](docs/product/18-dashboard-and-financial-calendar.md) и [Етикети без дефолтни стойности + запазени филтри](docs/product/19-user-labels-and-saved-filters.md). Това са документи за продуктово проучване; няма приложен код и няма одобрение за merge.
+
+**BC-2 — кредитни карти и ограничения:** **Приети** са `closing/cutoff`, **извлечения, падежи, billed/unbilled покупки и напомняния по кредитна карта**. Картовото погасяване е **трансфер** (без втори разход). **Отхвърлени** са специална функционалност за покупки на изплащане и **ръчно банково сверяване**. Потребителски кредити/ипотеки се въвеждат **само като обикновен разход**, без loan/mortgage сметки и погасителен план. [Спецификация](docs/product/20-credit-card-statements-bc2.md) · [Issue #15](https://github.com/HristoManov91/family-finance/issues/15).
+
+**BC-3 — отчетност и автоматизация:** **ПРИЕТО** сравнение на реалните разходи между месеци; `every N` регулярни операции и напомняния. **A5.2/A5.6 — ПРИЕТО УТОЧНЕНИЕ:** **за всеки регулярен ШАБЛОН на РАЗХОД или ПРИХОД човек избира автоматично ПЛАТЕН/ПОЛУЧЕН на датата или чака ръчно потвърждение**. Чакащият приход НЕ увеличава баланс/реални доходи до получаване; едно повторение се осчетоводява само веднъж. **Cash Flow/forecast модул НЕ ЗАСЕГА**, но стандартните приходи и разходи остават. **ОТВОРЕНО:** каналът за напомняния, default режим и holiday/DST. [#8](https://github.com/HristoManov91/family-finance/issues/8), [#10](https://github.com/HristoManov91/family-finance/issues/10), [#17](https://github.com/HristoManov91/family-finance/issues/17).
+
+**BC-4 — мобилни функции:** **ПРИЕТИ** са **widgets на началния екран на телефона** (бързо добавяне на разход, избрани салда, месечен бюджет) и **офлайн създаване/редакция на обикновени разходи**, с **безопасна синхронизация при връзка**. **ОТХВЪРЛЕНИ** са допълнителен app biometric/PIN lock при отваряне и автоматични чернови от банкови push/SMS известия. Офлайн OCR с външен provider **не е гарантиран**, оригиналните снимки/PDF не се архивират; conflict resolution, privacy и платформи още са за уточняване. [Widgets](docs/product/23-mobile-widgets-bc4.md) · [Offline](docs/product/24-offline-entry-and-sync-bc4.md) · [#18](https://github.com/HristoManov91/family-finance/issues/18) · [#19](https://github.com/HristoManov91/family-finance/issues/19).
+
+**BC-21 — преглед преди редакция:** **ПРИЕТО:** saved transaction първо **read-only detail**, отделен бутон **„Редактирай“**. Shared edit/void/audit/restore права остават, нов разход и OCR чернова са редактируеми преди Save. [#21](https://github.com/HristoManov91/family-finance/issues/21), [spec](docs/product/26-system-theme-and-transaction-detail-bc5.md).
+
+**BC-5 допълнителни спецификации:** [CSV импорт и пълен workspace archive/restore](docs/product/25-csv-import-and-workspace-backup-bc5.md), [„Следвай системата“ и read-only detail](docs/product/26-system-theme-and-transaction-detail-bc5.md). Това са docs-only решения, без runtime код/merge.

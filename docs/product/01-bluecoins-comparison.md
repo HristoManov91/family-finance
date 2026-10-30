@@ -22,7 +22,7 @@
 | Семейна работа | Споделена синхронизация чрез външен облачен акаунт | Отделни идентичности в **общо напълно видимо семейно пространство** |
 | Уеб | Няма пълноценна уеб версия според официалните им материали | Поддръжка на браузър |
 | Касови бележки | Прикачени документи | PDF/снимка → проверяема чернова с артикули и категоризация |
-| Преносимост | Импорт/експорт на определени формати | Надеждна Bluecoins миграция и PDF/XLSX/CSV изход |
+| Преносимост | Bluecoins импорт/експорт | **BC-18 CSV-only import**, QIF/OFX не са одобрени. **BC-19 пълен structured workspace export/restore по препоръка**, без OCR оригинали, отделно от report exports и PostgreSQL backups. Format/roles/restore UX отворени. [#20](https://github.com/HristoManov91/family-finance/issues/20). |
 
 ## Съществени разлики в модела
 - **Няма поле „кой плаща“.** При запис се избира финансова сметка, независимо кой въвежда транзакцията.
@@ -55,6 +55,12 @@
 - **BC-16 ПРИЕТО:** офлайн **създаване/редакция на обикновени разходи** и безопасна синхронизация при възстановена връзка. **Без двойни транзакции, тихо изтриване на редакции между членове или cross-workspace leakage.** Архитектурата и UI за конфликти остават отворени. **Offline OCR с външна AI услуга не е гарантиран и не пазим файлове след OCR.** [#19](https://github.com/HristoManov91/family-finance/issues/19).
 - **BC-17 ОТХВЪРЛЕНО:** няма прочитане и автоматично предлагане на разходи от банкови push/SMS нотификации.
 
+## BC-18–BC-21 — приети функции (30.10.2026)
+- **BC-18 ПРИЕТО:** допълнителен CSV-only import от други приложения, **не QIF/OFX**; съществуващият Bluecoins import остава.
+- **BC-19 ПРИЕТО ПО ПРЕПОРЪКА („ако е полезно“):** пълен преносим export/restore на **структурираните данни в едно workspace**; без снимки/PDF от OCR, отделно от server backups; format/security/permissions/MVP приоритет още не са решени. [#20](https://github.com/HristoManov91/family-finance/issues/20).
+- **BC-20 ПРИЕТО:** тема **„Следвай системата“**, към Light/Dark; True Black/индивидуален scope/default остават отворени.
+- **BC-21 ПРИЕТО:** saved transaction **read-only**, отделно **„Редактирай“**; нова/OCR чернова остава редактираща се. [#21](https://github.com/HristoManov91/family-finance/issues/21).
+
 ## Миграция от Bluecoins
 Трябва да проверим действителния **експорт** от личните данни и съответствията между име, дата, стойност, валута, категория, подкатегория, сметка, бележки, тагове, статус и разделени транзакции. Обявеният CSV формат не гарантира, че всяка покупка е налична по отделни артикули.
 
@@ -68,4 +74,4 @@
 
 **Вече ПРИЕТО за Family Finance:** светла и тъмна тема за web/mobile ([#11](https://github.com/HristoManov91/family-finance/issues/11)), категорийните месечни бюджети с изчислен общ лимит, ВСИЧКИ реални разходи в глобалния процент, човешки проверени OCR артикули (без съхранявани файлове в MVP), различни семейни пространства, много валути, кредитни карти — основни правила.
 
-**BC-1/BC-2/BC-3/BC-4 РЕШЕНИ:** BC-1 dashboard/календар/само потребителски labels/saved filters да, Net Worth не. BC-2 извлечения по кредитни карти да, installment/reconcile не, ипотека само разход. BC-3 отделен Cash Flow не засега, сравнение на месеци/гъвкава регулярност/напомняния да. **BC-4 mobile widgets да, app biometric/PIN lock НЕ, offline обикновени разходи + safe sync ДА, банкови SMS/push предложения НЕ**. [#12](https://github.com/HristoManov91/family-finance/issues/12) · [#18](https://github.com/HristoManov91/family-finance/issues/18) · [#19](https://github.com/HristoManov91/family-finance/issues/19). **ОСТАВА:** Bluecoins import mapping, персонални/споделени настройки, system theme/AMOLED, read-only detail UX, конкретни notification канали, offline конфликти и сигурност — без автоматично одобрение.
+**BC-1–BC-5 РЕШЕНИ на ниво функционалности:** dashboard/календар/етикети само потребителски/saved filters да; Net Worth не; картови извлечения да, installments/reconcile не, ипотека само разход; месечно сравнение/регулярни/напомняния да, Cash Flow не засега; widgets/offline да, app PIN/bank SMS не. **BC-5 CSV import ДА (QIF НЕ), пълен structured export/restore ДА ПО ПРЕПОРЪКА, Follow System ДА, read-only→Edit ДА**. Остават UX/security/restore/sync/импорт детайли и MVP приоритети. [#20](https://github.com/HristoManov91/family-finance/issues/20), [#21](https://github.com/HristoManov91/family-finance/issues/21).

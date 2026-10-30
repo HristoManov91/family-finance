@@ -56,7 +56,7 @@
 
 
 ## Тема и Bluecoins функционално сравнение — нови решения
-- **A9.1 ПРИЕТО:** **светла и тъмна тема**, и в браузър, и в мобилното приложение. **Следвай системата**, AMOLED и предпочитания за всеки потребител са **ПРЕДЛОЖЕНИЯ**, не одобрени още ([#11](https://github.com/HristoManov91/family-finance/issues/11), [theme spec](16-appearance-and-themes.md)).
+- **A9.1/BC-20 ПРИЕТО:** **Светла, Тъмна и „Следвай системата“** в браузър/мобилно; при System темата следва OS/browser, ръчният избор е независим. **AMOLED, индивидуален/workspace scope и first-use default ОТВОРЕНИ**, не самата системна тема. [#11](https://github.com/HristoManov91/family-finance/issues/11).
 - **BC-1 ПРИЕТО/ОТХВЪРЛЕНО:** dashboard, календар, само потребителски labels, saved filters — да, Net Worth не. **BC-2:** card statements да, purchase installments не, заем/ипотека само разход, bank reconcile не. **BC-3:** **BC-10 Cash Flow не засега**, **BC-11 сравняване на месеци да**, **BC-12 разширени регулярни операции да**, **BC-13 напомняния за приходи и разходи да**. [#12](https://github.com/HristoManov91/family-finance/issues/12), [#16](https://github.com/HristoManov91/family-finance/issues/16), [#17](https://github.com/HristoManov91/family-finance/issues/17). Следва BC-4 мобилно UX/сигурност.
 - Други вече уговорени области (банкови сметки, OCR без съхраняване на снимки, валути, семейна видимост, главни категории) запазват приетите си правила.
 

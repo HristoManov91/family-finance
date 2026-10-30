@@ -81,10 +81,10 @@
 - **BC-16 ПРИЕТО:** **създаване и редакция на обикновени разходи без интернет**, синхронизация след връзка с одит/идемпотентност/защита от тихи конфликти. **ОТВОРЕНО:** платформи, съхранение, конфликтен UI, кои още видове операции имат offline support. **Не обещаваме офлайн OCR**, когато OCR е външен; няма трайни снимкови файлове. [#19](https://github.com/HristoManov91/family-finance/issues/19).
 - **BC-17 ОТХВЪРЛЕНО:** няма автоматични чернови/разходи от банкова SMS/push нотификация, независимо от offline режима.
 
-## BC-5 — РЕШЕНО: CSV-only импорт, пълен архив, системна тема, read-only→Edit
+## BC-1–BC-4 — обобщение на вече решените рундове
 - **BC-2 — ПРИКЛЮЧЕН:** BC-06 да, BC-07 не, BC-08 само разход, BC-09 не. Картовите edge cases — [#15](https://github.com/HristoManov91/family-finance/issues/15).
 - **BC-3 — ПРИКЛЮЧЕН:** BC-10 не засега, BC-11 месечно сравнение да, BC-12 гъвкава регулярност да, BC-13 напомняния за приходи/разходи да ([#16](https://github.com/HristoManov91/family-finance/issues/16), [#17](https://github.com/HristoManov91/family-finance/issues/17)).
-- **BC-4 — ПРИКЛЮЧЕН:** BC-14 widgets да, BC-15 app biometric/PIN lock не, BC-16 offline обикновени разходи + безопасен sync да, BC-17 banking push/SMS autofill не. **ОТВОРЕНИ** технически/UX варианти: widgets Android/iOS, локален кеш/сигурност/конфликт, offline scope. Следва BC-5: import/export, настройки (вкл. system theme), read-only транзакционен изглед, известия/граници, които не са уточнени. [#18](https://github.com/HristoManov91/family-finance/issues/18), [#19](https://github.com/HristoManov91/family-finance/issues/19).
+- **BC-4 — ПРИКЛЮЧЕН:** widgets/offline safe sync да, допълнително app biometric/PIN lock и банкови SMS/push предложения не. **BC-5 вече СЪЩО е решен**: CSV-only import, structured full export/restore по препоръка, Follow System и read-only→Edit са приети. Подробните UX/security/restore/sync/MVP решения са отворени. [#18](https://github.com/HristoManov91/family-finance/issues/18), [#19](https://github.com/HristoManov91/family-finance/issues/19), [#20](https://github.com/HristoManov91/family-finance/issues/20), [#21](https://github.com/HristoManov91/family-finance/issues/21).
 
 ## BC-5 — потвърдени решения (30.10.2026)
 - **BC-18 ДА:** допълнителен **CSV-only** импорт с preview/mapping/confirm, **НЕ QIF/OFX**.

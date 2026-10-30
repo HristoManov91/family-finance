@@ -137,5 +137,5 @@
 Администраторски роли и покани; конверсия/трансфери между различни валути, смяна на основната валута, отстъпки/ваучери и връщания; каталог с продукти; офлайн синхронизация, **конкурентно редактиране и възстановимо изтриване**, детайли за одита.
 
 ## Външен вид и Bluecoins feature-gap (29.10.2026)
-- **ПРИЕТО:** уеб/мобилно **светла и тъмна тема**. **ПРЕДЛОЖЕНИЕ:** следване на системната тема, индивидуален scope и True Black ([#11](https://github.com/HristoManov91/family-finance/issues/11)).
+- **ПРИЕТО (BC-20):** уеб/мобилно **Light, Dark и „Следвай системата“**, като System следва OS/browser, ръчен Light/Dark не се override-ва. **ОТВОРЕНО:** personal/workspace scope, first-use default, True Black/AMOLED. [#11](https://github.com/HristoManov91/family-finance/issues/11).
 - **BC-1 РЕШЕНО:** **BC-01 dashboard**, **BC-02 календар**, **BC-03 етикети без DEFAULT, само създадени от потребителя**, **BC-04 именувани филтри** — ПРИЕТИ. **BC-05 отделен Net Worth отчет/графика/карта — ОТХВЪРЛЕНО**, без да премахва салдата/кредитния дълг. Точни UX/отношения, scope и филтри още се уточняват ([#13](https://github.com/HristoManov91/family-finance/issues/13), [#14](https://github.com/HristoManov91/family-finance/issues/14)).
